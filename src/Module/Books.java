@@ -13,4 +13,20 @@ public class Books extends Media {
         this.isbn = isbn;
         this.copy = copy;
     }
+
+    public String getAuthor (){
+        return author;
+    }
+
+    public String getPublisher(){
+        return publisher;
+    }
+
+    public String getIsbn(){
+        return isbn;
+    }
+
+    public boolean getCopy(){
+        return copy;
+    }
 }

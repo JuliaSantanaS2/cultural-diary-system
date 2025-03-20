@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Media {
-    protected String title;
-    protected String gender;
-    protected int yearRelease;
+    private String title;
+    private String gender;
+    private int yearRelease;
     private List<Review> reviews;
 
     public Media(String title, String gender, int yearRelease){
