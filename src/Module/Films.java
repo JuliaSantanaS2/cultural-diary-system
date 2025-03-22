@@ -1,22 +1,20 @@
 package Module;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class Films extends AudioVisualMedia{
-
+public class Films extends AudioVisualMedia {
     private String direction;
     private int runningtime;
     private String screenplay;
 
-
-    public Films (String originalTitlle, List<whereWatch> whereWatchs, int seasonEpisode, String direction, int runningtime, String screenplay) {
-
-        super(originalTitlle,whereWatchs,seasonEpisode);
+    public Films(String originalTitle, String gender, int yearRelease, int yearConclusion, int seasonYear, int seasonEpisode, List<String> whereWatch, String direction, int runningtime, String screenplay) {
+        super(originalTitle, gender, yearRelease, yearConclusion, seasonYear, seasonEpisode, originalTitle, whereWatch);
+        this.direction = direction;
         this.runningtime = runningtime;
         this.screenplay = screenplay;
-        this.direction = direction;
-
     }
+
 
     public String  getDirection(){
         return direction;

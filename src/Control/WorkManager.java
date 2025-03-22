@@ -9,7 +9,7 @@ import Module.Films;
 import Module.Media;
 import Module.Review;
 import Module.Season;
-import Module.Show;
+//import Module.Show;
 import View.Screen;
 
 
@@ -32,7 +32,18 @@ public class WorkManager {
 
         Books booksUser = new Books(title, gender, yearRelease, author, publisher, isbn, copy);
         booksLibrary.add(booksUser);
-        System.out.println("📚 Mídia adicionada: " + booksLibrary.getAuthor());
+        System.out.println("📚 Livro (Titulo)): " + booksUser.getTitle());
+        System.out.println("📚 Livro (Ator)): " + booksUser.getAuthor());
+        System.out.println("📚 Livro (Ator)): " + booksUser.getPublisher());
+        System.out.println("📚 Livro (ISBN)): " + booksUser.getIsbn());
+        System.out.println("📚 Livro (Exemplar)): " + booksUser.getCopy());
+    }
+
+
+    public static void main(String[] args) {
+        WorkManager manager = new WorkManager();
+        manager.addBooks("Dom Quixote", "Romance", 1605, "Miguel de Cervantes", "Editora Clássica", "123456789", true);
+        manager.addBooks("Fernanda Biografia", "Romance", 1605, "Fernanda", "Editora Clássica", "123456789", false);
     }
 
 }
