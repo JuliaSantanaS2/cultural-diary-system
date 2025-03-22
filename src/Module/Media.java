@@ -1,7 +1,8 @@
 package Module;
-
+import Module.Review;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class Media {
     private String title;
@@ -9,9 +10,9 @@ public class Media {
 
     public Media(String title, String gender, int yearRelease){
         this.title = title;
-        this.gender = gender;
+        //this.gender = gender;
         this.yearRelease = yearRelease;
-        this.review = new ArrayList<>(); // Ver se é isso mesmo ;)
+        //this.review = new ArrayList<>(); // Ver se é isso mesmo ;)
 
     }
 
