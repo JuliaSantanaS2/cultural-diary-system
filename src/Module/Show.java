@@ -6,8 +6,7 @@ public class Show extends AudioVisualMedia {
     private int seasonYear;
     private int seasonEpisode;
 
-    public Show(String original, int yearRelease, ,  yearConclusion, int seasonYear, int seasonEpisode) {}
-
+    public Show(String originalTittle, int yearRelease, int yearConclusion, int seasonYear, int seasonEpisode) {}
 
 
 }

@@ -1,26 +1,31 @@
 package Module;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class AudioVisualMedia extends Media {
 
-    private int String originalTitlle;
-    private int List<whereWatch> whereWatchs;
-    private int seasonEpisode;
+    private String originalTitle;
+    private List<String> whereWatch;
 
     public AudioVisualMedia (String title, String gender, int yearRelease, int yearConclusion, int seasonYear, int seasonEpisode){
         super(title, gender, yearRelease);
-        this.yearConclusion = yearConclusion;
-        this.seasonYear = seasonYear;
-        this.seasonEpisode = seasonEpisode;
+        this.originalTitle = originalTitle;
+        this.whereWatch = new ArrayList<>();
 
     }
 
-    public int getYearConclusion() {
-        return yearConclusion;
+    public String getOriginalTitle(){
+        return originalTitle;
     }
-    public int getSeasonYear(){
-        return seasonYear;
+    public void setOriginalTitle(String originalTitle){
+        this.originalTitle = originalTitle;
     }
-    public int getSeasonEpisode(){
-        return seasonEpisode;
+
+    public List<String> getWhereWatch(){
+        return whereWatch;
+    }
+    public void setWhereWatch(List<String> whereWatch){
+        this.whereWatch = whereWatch;
     }
 }

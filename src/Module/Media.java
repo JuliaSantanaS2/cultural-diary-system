@@ -5,37 +5,28 @@ import java.util.List;
 
 public class Media {
     private String title;
-    private String gender;
     private int yearRelease;
-    private List<Review> reviews;
 
     public Media(String title, String gender, int yearRelease){
         this.title = title;
         this.gender = gender;
         this.yearRelease = yearRelease;
-        this.review = new ArrayList<>();
+        this.review = new ArrayList<>(); // Ver se é isso mesmo ;)
 
-    }
-
-    public void addReview(int stars, String comment, boolean status) {
-        reviews.add(new Review(stars, comment, status));
-
-    }
-
-    public List<Review> getReviews() {
-        return reviews;
     }
 
     public String getTitle(){
         return title;
     }
-
-    public String getGender(){
-        return gender;
+    public void setTitle(String title){
+        this.title = title;
     }
 
     public int getYearRelease(){
         return yearRelease;
+    }
+    public void setYearRelease(int yearRelease){
+        this.yearRelease = yearRelease;
     }
 
 
