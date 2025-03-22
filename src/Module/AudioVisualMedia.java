@@ -2,8 +2,8 @@ package Module;
 
 public class AudioVisualMedia extends Media {
 
-    private int yearConclusion;
-    private int seasonYear;
+    private int String originalTitlle;
+    private int List<whereWatch> whereWatchs;
     private int seasonEpisode;
 
     public AudioVisualMedia (String title, String gender, int yearRelease, int yearConclusion, int seasonYear, int seasonEpisode){
