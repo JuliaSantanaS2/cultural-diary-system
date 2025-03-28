@@ -2,18 +2,12 @@ package Control;
 
 import java.util.ArrayList;
 import java.util.List;
-import Module.AudioVisualMedia;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 import Module.Books;
-import Module.Cast;
-import Module.Films;
-import Module.Media;
 import Module.Review;
-import Module.Season;
 //import Module.Show;
-import View.Screen;
-
-
-
 
 
 public class WorkManager {
@@ -25,6 +19,8 @@ public class WorkManager {
     public WorkManager() {
         this.reviewLibrary = new ArrayList<>();
         this.booksLibrary = new ArrayList<>();
+
+        
     }
 
 
