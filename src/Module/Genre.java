@@ -3,32 +3,33 @@ package Module;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Gender {
+public class Genre {
     private final List<String> genres;
 
-    public Gender() {
+    public Genre() {
         this.genres = new ArrayList<>();
     }
 
-    public Gender(List<String> names) {
+    public Genre(List<String> names) {
         this.genres = new ArrayList<>(names);
     }
 
-    public List<String> getNames() {
+    public List<String> getGenres() {
         return new ArrayList<>(genres);
     }
 
-    public void addName(String name) {
-        if (name != null && !name.trim().isEmpty()) {
-            genres.add(name);
+
+    public void addGenres(String genre) {
+        if (genre != null && !genre.trim().isEmpty()) {
+            genres.add(genre);
         }
     }
 
-    public void removeName(String name) {
-        genres.remove(name);
+    public void removeGenres(String genre) {
+        genres.remove(genre);
     }
 
-    public void clearNames() {
+    public void clearGenres() {
         genres.clear();
     }
 }

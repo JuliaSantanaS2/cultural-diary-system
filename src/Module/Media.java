@@ -1,18 +1,21 @@
 package Module;
-import Module.Review;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Media {
+
     private String title;
     private int yearRelease;
+    private List<Genre> listGenres ;
+    private List<Review> listReviews;
 
-    public Media(String title, String gender, int yearRelease){
+    public Media(String title, int yearRelease){
         this.title = title;
-        //this.gender = gender;
         this.yearRelease = yearRelease;
-        //this.review = new ArrayList<>(); // Ver se é isso mesmo ;)
+        this.genres = new ArrayList<>();
+        this.reviews = new ArrayList<>();
 
     }
 
@@ -29,6 +32,32 @@ public class Media {
     public void setYearRelease(int yearRelease){
         this.yearRelease = yearRelease;
     }
+
+    // About Genres
+    public List<Genre> getGenres () {return new ArrayList<>(genres);}
+
+    public void addGender(Genre gender) {
+        if (gender != null) {
+            genres.add(gender);
+        }
+    }
+
+    public void removeGenre(Genre gender) {genres.remove(gender);}
+    public void clearGenre() {genres.clear();}
+
+    // About Rewiew
+
+    public List<Review> getReviews() {return new ArrayList<>(reviews);}
+
+    public void addGender(Genre gender) {
+        if (gender != null) {
+            genres.add(gender);
+        }
+    }
+
+    public void removeGenre(Genre gender) {genres.remove(gender);}
+    public void clearGenre() {genres.clear();}
+
 
 
 }

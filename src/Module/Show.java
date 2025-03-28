@@ -6,8 +6,8 @@ public class Show extends AudioVisualMedia {
     private String yearConclusion ;
     private int yearEnd;
 
-    public Show(String originalTitle, String gender, int yearRelease, int seasonYear, int seasonEpisode, List<String> whereWatch,String yearConclusion, int yearEnd){
-        super(originalTitle, gender, yearRelease, seasonYear, seasonEpisode, originalTitle, whereWatch);
+    public Show(String title, int yearRelease, String originalTitle, List<String> whereWatch, String yearConclusion, int yearEnd  ){
+        super(title, yearRelease, originalTitle, whereWatch);
         this.yearConclusion = yearConclusion;
         this.yearEnd = yearEnd;
     }
