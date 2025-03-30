@@ -1,13 +1,15 @@
 package Module;
 
-public class Books extends Media {
+import java.util.List;
+
+public class Book extends Media {
     private String author;
     private String publisher;
     private String isbn;
     private boolean copy;
 
-    public Books(String title, String gender, int yearRelease, String author, String publisher, String isbn, boolean copy) {
-        super(title, gender, yearRelease);
+    public Book(String title, List<Genre> genres, int yearRelease, String author, String publisher, String isbn, boolean copy) {
+        super(title, yearRelease);
         this.author = author;
         this.publisher = publisher;
         this.isbn = isbn;
@@ -42,4 +44,13 @@ public class Books extends Media {
         this.copy = copy;
     }
 
+    @Override
+    public String toString() {
+        return "Book{" +
+                "author='" + author + '\'' +
+                ", publisher='" + publisher + '\'' +
+                ", isbn=" + isbn +
+                ", copy=" + copy +
+                '}';
+    }
 }

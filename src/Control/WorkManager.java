@@ -2,44 +2,69 @@ package Control;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
-import Module.Books;
-import Module.Review;
-//import Module.Show;
+
+import Module.Media;
+import Module.Genre;
+import Module.Book;
 
 
 public class WorkManager {
 
-    private final List<Books> booksLibrary;
-    private final List<Review> reviewLibrary;
+
     //private final List<Media> mediaLibrary;
+    private final List<Genre> genreLibrary;
+    private final List<Book> bookLibrary;
+
+
+    //private final List<Review> reviewLibrary;
 
     public WorkManager() {
-        this.reviewLibrary = new ArrayList<>();
-        this.booksLibrary = new ArrayList<>();
 
+        //this.mediaLibrary = new ArrayList<Media>();
+        this.genreLibrary = new ArrayList<Genre>();
+        this.bookLibrary = new ArrayList<>();
+
+
+        //this.reviewLibrary = new ArrayList<>();
+
+        initializeGenres();
         
     }
 
+    // New Genre
+    public void addGenre(String genreName){
+        for (Genre g : genreLibrary) {
+            if (g.getGenre().equalsIgnoreCase(genreName)) {
+                System.out.println("❌ Esse gênero já existe!"); // Colocar View
+                return;
+            }
+        }
 
-    public void addBooks(String title, String gender, int yearRelease, String author, String publisher, String isbn, boolean copy) {
+        genreLibrary.add(new Genre(genreName));
+        System.out.println("✅ Gênero cadastrado com sucesso!"); // Colocar View
 
-        Books booksUser = new Books(title, gender, yearRelease, author, publisher, isbn, copy);
-        booksLibrary.add(booksUser);
-        System.out.println("📚 Livro (Titulo)): " + booksUser.getTitle());
-        System.out.println("📚 Livro (Ator)): " + booksUser.getAuthor());
-        System.out.println("📚 Livro (Ator)): " + booksUser.getPublisher());
-        System.out.println("📚 Livro (ISBN)): " + booksUser.getIsbn());
-        System.out.println("📚 Livro (Exemplar)): " + booksUser.getCopy());
+    }
+    public void initializeGenres() {
+        addGenre("Ação");
+        addGenre("Romance");
+        addGenre("Ação");
+
+
     }
 
 
-    public static void main(String[] args) {
-        WorkManager manager = new WorkManager();
-        manager.addBooks("Dom Quixote", "Romance", 1605, "Miguel de Cervantes", "Editora Clássica", "123456789", true);
-        manager.addBooks("Fernanda Biografia", "Romance", 1605, "Fernanda", "Editora Clássica", "123456789", false);
+    public List<Genre> getGenres() {
+        return genreLibrary;
     }
 
+    // Create new Book
+    public Book createBook(String title, List<Genre> genres, int yearRelease, String author, String publisher, String isbn, boolean copy){
+        Book bookUser = new Book (title, genres, yearRelease, author, publisher, isbn, copy);
+        bookLibrary.add(bookUser);
+        return bookUser;
+    }
+
+    public List<Book> getBooks() {
+        return bookLibrary;
+    }
 }
