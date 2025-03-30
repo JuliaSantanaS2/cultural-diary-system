@@ -1,4 +1,4 @@
-package Control;
+/*package Control;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,3 +19,5 @@ public class Diary {
     }
 
 }
+
+*/

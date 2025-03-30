@@ -3,7 +3,6 @@ package Module;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Media {
 
     private String title;
@@ -14,8 +13,8 @@ public class Media {
     public Media(String title, int yearRelease){
         this.title = title;
         this.yearRelease = yearRelease;
-        this.genres = new ArrayList<>();
-        this.reviews = new ArrayList<>();
+        this.listGenres = new ArrayList<>();
+        this.listReviews = new ArrayList<>();
 
     }
 
@@ -34,30 +33,27 @@ public class Media {
     }
 
     // About Genres
-    public List<Genre> getGenres () {return new ArrayList<>(genres);}
+    public List<Genre> getGenres() {
+        return listGenres;
+    }
 
-    public void addGender(Genre gender) {
-        if (gender != null) {
-            genres.add(gender);
+    public void addGenre(Genre genre) {
+        if (!listGenres.contains(genre)) {  // Evita gêneros duplicados
+            listGenres.add(genre);
         }
     }
 
-    public void removeGenre(Genre gender) {genres.remove(gender);}
-    public void clearGenre() {genres.clear();}
+    //public void removeGenre(Genre gender) {genres.remove(gender);}
+    //public void clearGenre() {genres.clear();}
 
     // About Rewiew
 
-    public List<Review> getReviews() {return new ArrayList<>(reviews);}
+    public List<Review> getReviews() {return new ArrayList<>(listReviews);}
 
-    public void addGender(Genre gender) {
-        if (gender != null) {
-            genres.add(gender);
+    public void addReview(Review review) {
+        if (listReviews != null) {
+            listReviews.add(review);
         }
     }
-
-    public void removeGenre(Genre gender) {genres.remove(gender);}
-    public void clearGenre() {genres.clear();}
-
-
 
 }
