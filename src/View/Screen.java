@@ -2,12 +2,15 @@ package View;
 
 import Control.WorkManager;
 import java.util.Scanner;
+import java.util.ArrayList;
+import Module.Book;
 
 public class Screen {
 
     Menu menu = new Menu();
     WorkManager workManager = new WorkManager();
-    Create create = new Create();
+    Create create = new Create(workManager);
+    CreateReview createReview = new CreateReview(workManager);
 
     public void start() {
         int option_one = menu.showMenu();
@@ -17,7 +20,7 @@ public class Screen {
                 showRegisterMenu();
                 break;
             case 2:
-                System.out.println("Review not implemented yet.");
+                createReview.showCreateReview();
                 break;
             case 3:
                 System.out.println("Search not implemented yet.");
@@ -42,7 +45,7 @@ public class Screen {
                 showAddRegister();
                 break;
             case 2:
-                showEditRegister();
+                //showEditRegister();
                 break;
             case 3:
                 System.out.println("Return.");
@@ -61,14 +64,16 @@ public class Screen {
         switch (option_three) {
             case 1:
                 create.createBook();
+                System.out.println("Lista de livros na biblioteca:");
                 workManager.getBooks();
-                System.out.println("todos os libros.");
                 break;
             case 2:
-                create.createShow();
+                //create.createShow();
+                System.out.println("Invalid option.");
                 break;
             case 3:
-                create.createFilm();
+                //create.createFilm();
+                System.out.println("Invalid option.");
                 break;
             case 4:
                 showRegisterMenu();
@@ -77,10 +82,6 @@ public class Screen {
                 System.out.println("Invalid option.");
 
         }
-
-
-
-
 
 
     }

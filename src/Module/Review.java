@@ -2,13 +2,11 @@ package Module;
 
 public class Review {
     private String comment ;
-    private boolean status;
     private float stars;
-    private String reviewDate; // usar date
+    private String reviewDate;
 
-    public Review(String comment, boolean status, float stars, String reviewDate){
+    public Review(String comment, float stars, String reviewDate){
         this.comment = comment;
-        this.status = status;
         this.stars = stars;
         this.reviewDate = reviewDate;
     }
@@ -17,9 +15,6 @@ public class Review {
     public void setComment(String Comment){
         this.comment = comment;
     }
-
-    public boolean getStatus(){return status;}
-    public void setStatus(boolean status){this.status = status;}
 
     public float getStars(){
         return stars;
@@ -32,5 +27,10 @@ public class Review {
     public void setReviewDate(String reviewDate){
         this.reviewDate = reviewDate;
      }
+
+    @Override
+    public String toString() {
+        return reviewer + " (" + rating + "⭐): " + comment;
+    }
 
 }

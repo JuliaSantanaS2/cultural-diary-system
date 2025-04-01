@@ -9,7 +9,7 @@ public class Book extends Media {
     private boolean copy;
 
     public Book(String title, List<Genre> genres, int yearRelease, String author, String publisher, String isbn, boolean copy) {
-        super(title, yearRelease);
+        super(title, genres, yearRelease);
         this.author = author;
         this.publisher = publisher;
         this.isbn = isbn;
@@ -46,11 +46,10 @@ public class Book extends Media {
 
     @Override
     public String toString() {
-        return "Book{" +
-                "author='" + author + '\'' +
-                ", publisher='" + publisher + '\'' +
-                ", isbn=" + isbn +
-                ", copy=" + copy +
-                '}';
+        return super.toString() + "\n" +
+                "Autor: " + author + "\n" +
+                "Editora: " + publisher + "\n" +
+                "ISBN: " + isbn + "\n" +
+                "Cópia: " + (copy ? "Sim" : "Não");
     }
 }

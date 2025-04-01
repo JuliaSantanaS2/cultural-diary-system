@@ -1,20 +1,24 @@
-/* package Module;
+/*
+package Module;
 
 import java.util.List;
 
 public class Show extends AudioVisualMedia {
-    private String yearConclusion ;
+    private String yearConclusionTemp ;
     private int yearEnd;
 
-    public Show(String title, int yearRelease, String originalTitle, List<String> whereWatch, String yearConclusion, int yearEnd  ){
-        super(title, yearRelease, originalTitle, whereWatch);
-        this.yearConclusion = yearConclusion;
+    public Show(String title, int yearRelease, int yearConclusion, int seasonYear, int seasonEpisode, String originalTitle, List<String> whereWatch, int yearEnd  ){
+        super(title, yearRelease,yearConclusion,seasonYear,seasonEpisode, originalTitle, whereWatch);
+        this.yearConclusionTemp = yearConclusionTemp;
         this.yearEnd = yearEnd;
     }
 
-    public String getStatus(){return yearConclusion;}
-    public void setStatus(String yearConclusion){
-        this.yearConclusion = yearConclusion;
+
+
+
+    public String getStatus(){return yearConclusionTemp;}
+    public void setStatus(String yearConclusionTemp){
+        this.yearConclusionTemp = yearConclusionTemp;
     }
 
     public int getStars(){
@@ -26,4 +30,4 @@ public class Show extends AudioVisualMedia {
 
 }
 
-*/
+ */

@@ -11,4 +11,8 @@ public class Genre {
         return genre;
     }
 
+    @Override
+    public String toString() {
+        return genre;
+    }
 }

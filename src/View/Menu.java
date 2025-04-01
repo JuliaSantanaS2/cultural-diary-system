@@ -51,7 +51,7 @@ public class Menu {
 
             }
         }
-        while (!isValidOption);
+        while (option.equals("5"));
         return -1;
     }
 
@@ -80,7 +80,7 @@ public class Menu {
                     System.out.println("Invalid option");
             }
         }
-        while (!isValidOption);
+        while (option.equals("3"));
         return -1;
     }
 
@@ -113,7 +113,7 @@ public class Menu {
                     System.out.println("Invalid option");
             }
         }
-        while (!isValidOption);
+        while (option.equals("4"));
         return -1;
     }
 
@@ -146,7 +146,7 @@ public class Menu {
                     System.out.println("Invalid option");
             }
         }
-        while (!isValidOption);
+        while (option.equals("4"));
         return -1;
     }
 

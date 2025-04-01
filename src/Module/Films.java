@@ -1,4 +1,5 @@
-/*package Module;
+/*
+package Module;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +12,8 @@ public class Films extends AudioVisualMedia {
     private int runningtime;
     private String screenplay;
 
-    public Films(String originalTitle, String gender, int yearRelease, int yearConclusion, int seasonYear, int seasonEpisode, List<String> whereWatch, String direction, int runningtime, String screenplay) {
-        super(originalTitle, gender, yearRelease, yearConclusion, seasonYear, seasonEpisode, originalTitle, whereWatch);
+    public Films(String originalTitle, int yearRelease, int yearConclusion, int seasonYear, int seasonEpisode, List<String> whereWatch, String direction, int runningtime, String screenplay) {
+        super(originalTitle, yearRelease, yearConclusion, seasonYear, seasonEpisode, originalTitle, whereWatch);
         this.direction = direction;
         this.runningtime = runningtime;
         this.screenplay = screenplay;
@@ -41,4 +42,5 @@ public class Films extends AudioVisualMedia {
     }
 
 }
-*/
+
+ */
