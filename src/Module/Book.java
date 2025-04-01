@@ -8,8 +8,8 @@ public class Book extends Media {
     private String isbn;
     private boolean copy;
 
-    public Book(String title, List<Genre> genres, int yearRelease, String author, String publisher, String isbn, boolean copy) {
-        super(title, genres, yearRelease);
+    public Book(boolean seen, String title, List<Genre> genres, int yearRelease, String author, String publisher, String isbn, boolean copy) {
+        super(seen, title, genres, yearRelease);
         this.author = author;
         this.publisher = publisher;
         this.isbn = isbn;

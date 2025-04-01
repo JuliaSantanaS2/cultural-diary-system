@@ -1,6 +1,7 @@
 package View;
 
 import Module.Review;
+import Module.Book;
 import Control.WorkManager;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -21,28 +22,18 @@ public class CreateReview {
     }
 
 
-    public List<Genre> addGenresMedia() {
-        List<Genre> allGenres = workManager.getGenres();
-        List<Genre> selectedGenres = new ArrayList<>();
+    public String selectBookFromLibrary() {
+        System.out.println("<----------------------------->");
+        System.out.println("Digite o título do livro que você deseja selecionar:");
 
-        while (true) {
-            System.out.println("Selecione um gênero (digite o número correspondente):");
-            for (int i = 0; i < allGenres.size(); i++) {
-                System.out.println((i + 1) + " - " + allGenres.get(i).getGenre());
-            }
-
-            int genreIndex = Integer.parseInt(scanner.nextLine().trim()) - 1;
-            Genre genre = allGenres.get(genreIndex);
-            if (!selectedGenres.contains(genre)) {
-                selectedGenres.add(genre);
-            }
-
-            System.out.println("Deseja adicionar mais um gênero? (s/n)");
-            String response = scanner.nextLine().trim().toLowerCase();
-            if (!response.equals("s")) {
-                break;
-            }
+        List<String> books = workManager.getBooksName();
+        for (int i = 0; i < books.size(); i++) {
+            System.out.println((i + 1) + " - " + books.get(i));
         }
+
+        int nameBookIndex = Integer.parseInt(scanner.nextLine().trim()) - 1;
+        return books.get(nameBookIndex);
+    }
 
     public String dateNow() {
         LocalDate date = LocalDate.now();
@@ -53,6 +44,9 @@ public class CreateReview {
 
 
     public void showCreateReview() {
+
+
+        int result;
         System.out.println("<----------------------------->");
         System.out.println("Escolha o tipo de mídia:");
         System.out.println("1. Livro");
@@ -64,16 +58,16 @@ public class CreateReview {
 
         switch (option) {
             case "1":
-                createReviewBook();
+                createReviewBookData();
                 break;
             case "2":
                 // Implementar criação de filme
                 break;
             case "3":
-                // Implementar criação de música
+                // Implementar criação de Seie/Temporada
                 break;
             case "4":
-                // Implementar criação de jogo
+                //
                 break;
             case "5":
                 // Voltar ao menu anterior
@@ -83,7 +77,12 @@ public class CreateReview {
         }
     }
 
-    public void createReviewBook() {
+    public void createReviewBookData() {
+
+
+        System.out.println("<----------------------------->");
+        System.out.println("Qual Livro você deseja fazer a Review?:");
+        String title = selectBookFromLibrary();
 
         System.out.println("<----------------------------->");
         System.out.println("Digite a sua Review sobre o Book:");
@@ -97,9 +96,20 @@ public class CreateReview {
         System.out.println("Digite sua Stars entre 1 e 5:");
         String reviewDate = dateNow();
 
+        int result = workManager.createReviewBook(title,comment, stars, reviewDate);
+        messager(result);
+    }
 
-        workManager.createReviewBook(comment, stars, reviewDate);
-
-
+    public void messager(int result) {
+        if (result == 0) {
+            System.out.println("Review criada com sucesso!");
+        } else if (result == 1) {
+            System.out.println("Livro não encontrado.");
+        } else if (result == 2) {
+            System.out.println("Você ainda não viu esse livro.");
+        }
+        else {
+            System.out.println("Erro ao criar a review.");
+        }
     }
 }

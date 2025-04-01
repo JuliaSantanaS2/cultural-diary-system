@@ -30,7 +30,7 @@ public class Review {
 
     @Override
     public String toString() {
-        return reviewer + " (" + rating + "⭐): " + comment;
+        return comment + " (" + stars + "⭐): " + reviewDate;
     }
 
 }

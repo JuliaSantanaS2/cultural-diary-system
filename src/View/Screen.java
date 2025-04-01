@@ -18,9 +18,14 @@ public class Screen {
         switch (option_one) {
             case 1:
                 showRegisterMenu();
+
                 break;
             case 2:
                 createReview.showCreateReview();
+                System.out.println("Reviw");
+                workManager.getReview();
+                System.out.println("Books");
+                workManager.getBooks();
                 break;
             case 3:
                 System.out.println("Search not implemented yet.");
@@ -66,6 +71,7 @@ public class Screen {
                 create.createBook();
                 System.out.println("Lista de livros na biblioteca:");
                 workManager.getBooks();
+                showAddRegister();
                 break;
             case 2:
                 //create.createShow();

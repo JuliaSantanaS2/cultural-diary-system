@@ -1,6 +1,7 @@
 package Control;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,16 +15,20 @@ import Module.Review;
 public class WorkManager {
 
     private final List<Genre> genreLibrary;
+    private final List<Review> reviewLibrary;
+
     private final List<Book> bookLibrary;
-    private Map<String, List<Review>> reviewsLibraryMap;
-    private Map<String, Media> mediaLibraryMap;
+
+    //private Map<String, Media> mediaLibraryMap;
 
     public WorkManager() {
 
         this.genreLibrary = new ArrayList<>();
+        this.reviewLibrary = new ArrayList<>();
         this.bookLibrary = new ArrayList<>();
-        this.reviewsLibraryMap = new HashMap<>();
-        this.mediaLibraryMap = new HashMap<>();
+
+        //this.reviewsLibraryMap = new HashMap<>();
+        //this.mediaLibraryMap = new HashMap<>();
 
         initializeGenres();
         
@@ -47,45 +52,58 @@ public class WorkManager {
         addGenre("Cassino");
         addGenre("Aventura");
 
+        createBook(true, "Robbit", Arrays.asList(new Genre("Ação"), new Genre("Romance")), 2023, "Robbit", "Robbit", "1234567890", true);
+
     }
 
 
-    // Create new Book
-    public void createBook(String title,List<Genre> genres, int yearRelease, String author, String publisher, String isbn, boolean copy){
-        Book book = new Book (title, genres, yearRelease, author, publisher, isbn, copy);
+    // About the Book
+    public void createBook(boolean seen, String title,List<Genre> genres, int yearRelease, String author, String publisher, String isbn, boolean copy){
+        Book book = new Book (seen, title, genres, yearRelease, author, publisher, isbn, copy);
         bookLibrary.add(book);
     }
 
-// Quero printar a lista de livros
-    public void printBooks() {
-        for (Book b : bookLibrary) {
-            System.out.println(b.toString());
-        }
-    }
+
     public void getBooks() {
         for (Book b : bookLibrary) {
             System.out.println(b.toString());
         }
     }
 
-    public void createReviewBook(String title, String comment, int stars, String reviewDate) {
-        if (mediaLibraryMap.containsKey(title)) {
-            Media media = mediaLibraryMap.get(title);
+    public List<String> getBooksName() {
+        List<String> bookTitles = new ArrayList<>();  // Lista para armazenar os títulos
+        for (Book b : bookLibrary) {
+            bookTitles.add(b.getTitle());  // Adiciona o título à lista
+        }
+        return bookTitles;  // Retorna a lista com os títulos
+    }
 
-            // Verifica se o usuário já viu a obra, aqui você pode colocar a lógica do seu sistema
-            boolean seen = hasUserSeenMedia(title);  // Suponha que tenha esse método de verificação
-            if (seen) {
-                Review newReview = new Review(comment, stars, reviewDate);  // Cria uma nova review
-                List<Review> reviews = reviewsLibraryMap.get(title);  // Obtém a lista de reviews do livro
-                reviews.add(newReview);  // Adiciona a review à lista de reviews do livro
-                System.out.println("✅ Review adicionada com sucesso ao livro: " + title);
-            } else {
-                System.out.println("Você precisa ter visto o livro antes de deixar uma review.");
+
+
+    public int createReviewBook(String title, String comment, int stars, String reviewDate) {
+        for (Book book : bookLibrary) {
+            if (book.getTitle().equalsIgnoreCase(title)) {
+                if (book.isSeen()) {
+                    Review newReview = new Review(comment, stars, reviewDate);
+
+                    book.addReview(newReview);
+                    reviewLibrary.add(newReview);
+                    getReview();
+                    return 0;
+                } else {
+                    return 2;
+                }
             }
-        } else {
-            System.out.println("Livro não encontrado: " + title);
+        }
+        return 1;
+    }
+
+    public void getReview() {
+        for (Review b : reviewLibrary) {
+            System.out.println(b.toString());
         }
     }
+
 
 
 

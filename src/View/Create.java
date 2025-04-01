@@ -21,6 +21,7 @@ public class Create {
         List<Genre> allGenres = workManager.getGenres();
         List<Genre> selectedGenres = new ArrayList<>();
 
+
         while (true) {
             System.out.println("Selecione um gênero (digite o número correspondente):");
             for (int i = 0; i < allGenres.size(); i++) {
@@ -47,10 +48,9 @@ public class Create {
         return selectedGenres;
     }
 
-    public boolean confirmationCopy() {
+    public boolean confirmationBoolean() {
         boolean result = false;
         while (!result) {
-            System.out.println("Você já leu/assistiu?");
             System.out.println("[1] - Sim");
             System.out.println("[2] - Não");
             System.out.print("Digite a opção desejada: ");
@@ -123,9 +123,13 @@ public class Create {
 
         System.out.println("<----------------------------->");
         System.out.println("Você tem Copia do  Livro:");
-        boolean copy = confirmationCopy();
+        boolean copy = confirmationBoolean();
 
-        workManager.createBook(title, genres,  yearRelease, author, publisher, isbn, copy);
+        System.out.println("<----------------------------->");
+        System.out.println("Você Já leu o Livro?:");
+        boolean seen = confirmationBoolean();
+
+        workManager.createBook(seen,title, genres,  yearRelease, author, publisher, isbn, copy);
         addAnotherMedia_Question();
 
 
