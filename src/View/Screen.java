@@ -22,13 +22,11 @@ public class Screen {
                 break;
             case 2:
                 createReview.showCreateReview();
-                System.out.println("Reviw");
-                workManager.getReview();
                 System.out.println("Books");
                 workManager.getBooks();
                 break;
             case 3:
-                System.out.println("Search not implemented yet.");
+                workManager.printLibraryTable();
                 break;
             case 4:
                 System.out.println("Backup not implemented yet.");

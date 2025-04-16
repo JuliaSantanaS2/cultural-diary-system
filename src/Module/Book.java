@@ -51,5 +51,6 @@ public class Book extends Media {
                 "Editora: " + publisher + "\n" +
                 "ISBN: " + isbn + "\n" +
                 "Cópia: " + (copy ? "Sim" : "Não");
+
     }
 }

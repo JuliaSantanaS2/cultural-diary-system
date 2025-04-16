@@ -61,7 +61,8 @@ public class Media {
     public String toString() {
         return "Título: " + title + "\n" +
                 "Ano de Lançamento: " + yearRelease + "\n" +
-                "Gêneros: " + listGenres;
+                "Gêneros: " + listGenres + "\n" +
+                "Review" + listReviews;
     }
 
 
