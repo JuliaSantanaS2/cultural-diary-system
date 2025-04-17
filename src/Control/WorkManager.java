@@ -5,11 +5,17 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Comparator;
 
 import Module.Media;
+import Module.Films;
+import Module.Season;
+import Module.Show;
 import Module.Genre;
 import Module.Book;
 import Module.Review;
+import java.util.Collections;
+
 
 
 public class WorkManager {
@@ -18,6 +24,9 @@ public class WorkManager {
     private final List<Review> reviewLibrary;
 
     private final List<Book> bookLibrary;
+    private final List<Films> filmLibrary;
+    private final List<Show> showLibrary;
+    private final List<Media> media;
 
     //private Map<String, Media> mediaLibraryMap;
 
@@ -26,24 +35,35 @@ public class WorkManager {
         this.genreLibrary = new ArrayList<>();
         this.reviewLibrary = new ArrayList<>();
         this.bookLibrary = new ArrayList<>();
+        this.filmLibrary = new ArrayList<>();
+        this.showLibrary = new ArrayList<>();
+        this.media = new ArrayList<>();
 
         //this.reviewsLibraryMap = new HashMap<>();
         //this.mediaLibraryMap = new HashMap<>();
 
         initializeGenres();
-        
+
     }
 
     // New Genre
     public void addGenre(String genreName){
 
         genreLibrary.add(new Genre(genreName));
-        System.out.println("✅ Gênero cadastrado com sucesso!"); // Colocar View
+        Collections.sort(genreLibrary);
+
 
     }
 
     public List<Genre> getGenres() {
         return genreLibrary;
+    }
+
+    public void getGenresTest() {
+
+        for (Genre genre : genreLibrary) {
+            System.out.println("- " + genre.getGenre());
+        }
     }
 
     public void initializeGenres() {
@@ -73,6 +93,84 @@ public class WorkManager {
         createBook(false, "Sherlock Holmes: Um Estudo em Vermelho", Arrays.asList(new Genre("Mistério"), new Genre("Detetive")), 1887, "Arthur Conan Doyle", "Ward, Lock & Co.", "9781514646060", false);
         createBook(true, "Percy Jackson e o Ladrão de Raios", Arrays.asList(new Genre("Fantasia"), new Genre("Aventura")), 2005, "Rick Riordan", "Disney-Hyperion", "9780786838653", true);
 
+        createShow(
+                Arrays.asList("Bruce Willis", "Samuel L. Jackson", "Jeremy Irons"),
+                true,
+                "TESTE TEMPORADA",
+                Arrays.asList(new Genre("Ação"), new Genre("Thriller")),
+                1995,
+                "Duro de Matar: Vingança",
+                Arrays.asList("Netflix", "Amazon Prime"),
+                128
+        );
+
+        createFilm(
+                Arrays.asList("Bruce Willis", "Samuel L. Jackson", "Jeremy Irons"),
+                true,
+                "Die Hard with a Vengeance",
+                Arrays.asList(new Genre("Ação"), new Genre("Thriller")),
+                1995,
+                "Duro de Matar: Vingança",
+                Arrays.asList("Netflix", "Amazon Prime"),
+                "John McTiernan",
+                128,
+                "Jonathan Hensleigh"
+        );
+
+        createFilm(
+                Arrays.asList("Keanu Reeves", "Laurence Fishburne", "Carrie-Anne Moss"),
+                false,
+                "The Matrix",
+                Arrays.asList(new Genre("Ficção Científica"), new Genre("Ação")),
+                1999,
+                "Matrix",
+                Arrays.asList("HBO Max", "Netflix"),
+                "The Wachowskis",
+                136,
+                "Lilly Wachowski, Lana Wachowski"
+        );
+
+        createFilm(
+                Arrays.asList("Tom Hanks", "Tim Allen", "Don Rickles"),
+                true,
+                "Toy Story",
+                Arrays.asList(new Genre("Animação"), new Genre("Família")),
+                1995,
+                "Toy Story",
+                Arrays.asList("Disney+", "Amazon Prime"),
+                "John Lasseter",
+                81,
+                "Joss Whedon, Andrew Stanton"
+        );
+
+        int result2 = createReviewFilm(
+                "Toy Story",
+                "Excelente filme de ação com muita adrenalina!",
+                5,
+                "2025/04/17"
+        );
+
+        int result3 =  createReviewFilm(
+                "The Matrix",
+                "Um clássico da ficção científica, com cenas de ação memoráveis.",
+                5,
+                "2025/04/17");
+
+        int result1 = createReviewBook(
+                "Robbit",
+                "Uma obra-prima do cinema, com uma direção incrível e uma história profunda.",
+                5,
+                "2025/04/17"
+        );
+
+        int result20 = createReviewBook(
+                "Harry Potter e a Pedra Filosofal",
+                "Filme cheio de reviravoltas, com um enredo desafiador e visual impressionante.",
+                4,
+                "2025/04/17"
+        );
+
+
     }
 
 
@@ -80,6 +178,7 @@ public class WorkManager {
     public void createBook(boolean seen, String title,List<Genre> genres, int yearRelease, String author, String publisher, String isbn, boolean copy){
         Book book = new Book (seen, title, genres, yearRelease, author, publisher, isbn, copy);
         bookLibrary.add(book);
+        media.add(book);
     }
 
 
@@ -123,22 +222,197 @@ public class WorkManager {
         }
     }
 
+    // Não usando
     public void printLibraryTable() {
-        // Definir cabeçalho da tabela
-        System.out.printf("%-60s | %-60s | %-10s%n", "Title", "Author", "Year");
-        System.out.println("--------------------------------------------");
 
-        // Iterar sobre os livros e imprimir formatado
+        System.out.printf("%-20s | %-20s | %-4s%n", "Title", "Author", "Year");
+        System.out.println("--------------------------------------------------------");
+
         for (Book book : bookLibrary) {
-            System.out.printf("%-20s | %-15s | %-4d%n", book.getTitle(), book.getAuthor(), book.getYearRelease());
+            String title = book.getTitle();
+            String author = book.getAuthor();
+
+            // Se for maior que 17 caracteres, corta e adiciona "..."
+            if (title.length() > 17) {
+                title = title.substring(0, 17) + "...";
+            }
+
+            if (author.length() > 17) {
+                author = author.substring(0, 17) + "...";
+            }
+
+            System.out.printf("%-20s | %-15s | %-4d%n", title, author, book.getYearRelease());
         }
     }
 
+    public void printAllMedia() {
+
+        // Cria uma lista combinada de livros e filmes e Serie (Falta colocar)
+        //List<Media> media = new ArrayList<>();
+        //media.addAll(bookLibrary);
+        //media.addAll(filmLibrary);
+
+        //media.sort(Comparator.comparing(Media::getTitle));
+
+        System.out.printf("%-20s | %-20s | %-5s | %-5s%n", "Title", "Author/Director", "Year", "Stars");
+        System.out.println("---------------------------------------------------------------");
+
+
+        for (Media item : media) {
+            String title = item.getTitle();
+            if (title.length() > 17) title = title.substring(0, 17) + "...";
+
+            String creator = "";
+            float stars = 0;
+
+            if (item instanceof Book) {
+                Book book = (Book) item;
+                creator = book.getAuthor();
+                if (creator.length() > 17) creator = creator.substring(0, 17) + "...";
+
+                if (!item.getReviews().isEmpty()) {
+                    stars = item.getReviews().get(item.getReviews().size() - 1).getStars();
+                }
+
+                // Verifica se o item é um Film
+            } else if (item instanceof Films) {
+                Films film = (Films) item;
+                creator = film.getDirection();
+                if (creator.length() > 17) creator = creator.substring(0, 17) + "...";
+
+                //Muda depois para pegar a ultima stars
+                if (!item.getReviews().isEmpty()) {
+                    stars = calculateAverageStars(item.getReviews());
+                }
+            }
+            // Imprime os dados formatados
+            System.out.printf("%-20s | %-20s | %-4d | %-5.1f%n", title, creator, item.getYearRelease(), stars);
+        }
+    }
+
+    // ISSO È PARA SERIE
+    private float calculateAverageStars(List<Review> reviews) {
+        float sum = 0;
+        for (Review review : reviews) {
+            sum += review.getStars();
+        }
+        return sum / reviews.size(); // Retorna a média
+    }
+
+
+    // ABOUT FILM
+
     // Create new Film
-    //public Film createFilm(String title, List<Genre> genres, int yearRelease, String author, String publisher, String isbn, boolean copy){
-        //Book bookUser = new Book (title, genres, yearRelease, author, publisher, isbn, copy);
-        //bookLibrary.add(bookUser);
-        //return bookUser;
-    //}
+    public void createFilm(List<String> cast, boolean seen, String title, List<Genre> genres, int yearRelease, String originalTitle, List<String> whereWatch, String direction, int runningtime, String screenplay){
+        Films film = new Films (cast, seen, title, genres, yearRelease, originalTitle, whereWatch, direction, runningtime, screenplay);
+        filmLibrary.add(film);
+        media.add(film);
+    }
+
+    public int createReviewFilm(String title, String comment, int stars, String reviewDate) {
+        for (Films film : filmLibrary) {
+           if (film.getTitle() != null && film.getTitle().equalsIgnoreCase(title)) {
+                if (film.isSeen()) {
+                    Review newReview = new Review(comment, stars, reviewDate);
+
+                    film.addReview(newReview);
+                    reviewLibrary.add(newReview);
+
+                    return 0;
+                } else {
+                    return 2;
+                }
+            }
+        }
+        return 1;
+    }
+
+
+
+    public List<String> getFilmName() {
+        List<String> filmTitles = new ArrayList<>();
+        for (Films f : filmLibrary) {
+            filmTitles.add(f.getTitle());
+        }
+        return filmTitles;
+    }
+
+    // Create new Show
+    public void createShow(List<String> cast, boolean seen, String title, List<Genre> genres, int yearRelease, String originalTitle, List<String> whereWatch, int yearEnd){
+        Show show = new Show (cast, seen, title, genres, yearRelease, originalTitle, whereWatch, yearEnd);
+        showLibrary.add(show);
+        media.add(show);
+    }
+
+    public int createSeason(String title, int seasonNumber, int episodeCount, String releaseDate) {
+        for (Show show : showLibrary) {
+            if (show.getTitle() != null && show.getTitle().equalsIgnoreCase(title)) {
+                if (show.isSeen()) {
+                    Season newSeason = new Season(seasonNumber, episodeCount, releaseDate);
+
+                    show.addSeason(newSeason);
+
+                    return 0;
+                } else {
+                    return 2;
+                }
+            }
+        }
+        return 1;
+    }
+
+    public List<String> getShowName() {
+        List<String> showTitles = new ArrayList<>();  // Lista para armazenar os títulos
+        for (Show s : showLibrary) {
+            showTitles.add(s.getTitle());  // Adiciona o título à lista
+        }
+        return showTitles;  // Retorna a lista com os títulos
+    }
+
+    public List<Integer> getSeasonsByShowName(String showTitle) {
+        for (Show show : showLibrary) {
+            if (show.getTitle().equalsIgnoreCase(showTitle)) {
+                List<Integer> seasonNumbers = new ArrayList<>();
+                for (Season season : show.getSeasons()) {
+                    seasonNumbers.add(season.getSeasonNumber());
+                }
+                return seasonNumbers; // Retorna os números das temporadas
+            }
+        }
+        return Collections.emptyList(); // Retorna uma lista vazia se a série não for encontrada
+    }
+
+    public int createReviewShow(String showTitle, int seasonNumber, String comment, int stars, String reviewDate) {
+        for (Show show : showLibrary) {
+            if (show.getTitle().equalsIgnoreCase(showTitle)) {
+                for (Season season : show.getSeasons()) {
+                    if (season.getSeasonNumber() == seasonNumber) {
+
+                        Review newReview = new Review(comment, stars, reviewDate);
+                        season.addReview(newReview);
+                        reviewLibrary.add(newReview);
+                        return 0; // Review criada com sucesso
+
+                    }
+                }
+                return 3; // Temporada não encontrada
+            }
+        }
+        return 1; // Série não encontrada
+    }
+
+    public void getShow() {
+        for (Show show : showLibrary) {
+            System.out.println(show.toString());
+            for (Season season : show.getSeasons()) {
+                System.out.println("  Temporada " + season.getSeasonNumber() + ":");
+                for (Review review : season.getReviews()) {
+                    System.out.println("    - " + review.toString());
+                }
+            }
+        }
+    }
+
+
 
 }

@@ -1,6 +1,6 @@
 package Module;
 
-public class Genre {
+public class Genre implements Comparable<Genre> {
     private String genre;
 
     public Genre(String genre) {
@@ -14,5 +14,10 @@ public class Genre {
     @Override
     public String toString() {
         return genre;
+    }
+
+    @Override
+    public int compareTo(Genre other) {
+        return this.genre.compareToIgnoreCase(other.genre);
     }
 }

@@ -1,7 +1,8 @@
 package Module;
 
 //REVER A FUNÇÃO
-//import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 //import java.util.ArrayList;
 //import java.util.Scanner;
 //import java.util.HashMap;
@@ -10,11 +11,13 @@ public class Season {
     private int seasonNumber;
     private int episodeCount;
     private String releaseDate;
+    private List<Review> listReviews;
 
-    public Season(String title, int seasonNumber, int episodeCount, String releaseDate, String overview) {
+    public Season(int seasonNumber, int episodeCount, String releaseDate) {
         this.seasonNumber = seasonNumber;
         this.episodeCount = episodeCount;
         this.releaseDate = releaseDate;
+        this.listReviews = new ArrayList<>();
     }
 
     public int getSeasonNumber() {
@@ -38,6 +41,13 @@ public class Season {
         this.releaseDate = releaseDate;
     }
 
+    public void addReview(Review review) {
+        this.listReviews.add(review);
+    }
+
+    public List<Review> getReviews() {
+        return listReviews;
+    }
 
 }
 

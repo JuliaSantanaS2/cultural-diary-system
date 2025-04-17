@@ -1,25 +1,19 @@
-/*
 package Module;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Show extends AudioVisualMedia {
-    private String yearConclusionTemp ;
+
+    private List<Season> seasons = new ArrayList<>();
     private int yearEnd;
 
-    public Show(String title, int yearRelease, int yearConclusion, int seasonYear, int seasonEpisode, String originalTitle, List<String> whereWatch, int yearEnd  ){
-        super(title, yearRelease,yearConclusion,seasonYear,seasonEpisode, originalTitle, whereWatch);
-        this.yearConclusionTemp = yearConclusionTemp;
+    public Show(List<String> cast, boolean seen, String title, List<Genre> genres, int yearRelease, String originalTitle, List<String> whereWatch, int yearEnd){
+        super(cast,seen,title,genres,yearRelease,originalTitle,whereWatch);
         this.yearEnd = yearEnd;
+        this.seasons = new ArrayList<>();
     }
 
-
-
-
-    public String getStatus(){return yearConclusionTemp;}
-    public void setStatus(String yearConclusionTemp){
-        this.yearConclusionTemp = yearConclusionTemp;
-    }
 
     public int getStars(){
         return yearEnd;
@@ -28,6 +22,22 @@ public class Show extends AudioVisualMedia {
         this.yearEnd = yearEnd;
     }
 
+    public void addSeason(Season season) {
+        seasons.add(season);
+    }
+
+    public List<Season> getSeasons() {
+        return seasons;
+    }
+
+    public List<Integer> getSeasonsNumber() {
+        List<Integer> seasonNumbers = new ArrayList<>();
+        for (Season season : seasons) {
+            seasonNumbers.add(season.getSeasonNumber());
+        }
+        return seasonNumbers;
+    }
+
 }
 
- */
+

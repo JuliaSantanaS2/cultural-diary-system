@@ -1,5 +1,3 @@
-
-/*
 package Module;
 
 import java.util.ArrayList;
@@ -9,11 +7,13 @@ public class AudioVisualMedia extends Media {
 
     private String originalTitle;
     private List<String> whereWatch;
+    private final List<String> cast;
 
-    public AudioVisualMedia(String title, int yearRelease, int yearConclusion, int seasonYear, int seasonEpisode, String originalTitle, List<String> whereWatch) {
-        super(title, yearRelease);
+    public AudioVisualMedia(List<String> cast, boolean seen, String title, List<Genre> genres, int yearRelease, String originalTitle, List<String> whereWatch) {
+        super( seen, title, genres, yearRelease);
         this.originalTitle = originalTitle;
         this.whereWatch = whereWatch;
+        this.cast = new ArrayList<>();
     }
 
     public String getOriginalTitle() {
@@ -31,6 +31,7 @@ public class AudioVisualMedia extends Media {
     public void setWhereWatch(List<String> whereWatch) {
         this.whereWatch = whereWatch;
     }
+
+    public List<String> getCast() {return cast;}
 }
 
-*/
