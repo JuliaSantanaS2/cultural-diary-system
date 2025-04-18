@@ -16,6 +16,7 @@ import Module.Book;
 import Module.Review;
 import java.util.Collections;
 
+//import static jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyles.title;
 
 
 public class WorkManager {
@@ -248,11 +249,12 @@ public class WorkManager {
     public void printAllMedia() {
 
         // Cria uma lista combinada de livros e filmes e Serie (Falta colocar)
-        //List<Media> media = new ArrayList<>();
-        //media.addAll(bookLibrary);
-        //media.addAll(filmLibrary);
+        List<Media> media = new ArrayList<>();
+        media.addAll(bookLibrary);
+        media.addAll(filmLibrary);
+        media.addAll(showLibrary);
 
-        //media.sort(Comparator.comparing(Media::getTitle));
+        media.sort(Comparator.comparing(Media::getTitle));
 
         System.out.printf("%-20s | %-20s | %-5s | %-5s%n", "Title", "Author/Director", "Year", "Stars");
         System.out.println("---------------------------------------------------------------");
@@ -260,7 +262,7 @@ public class WorkManager {
 
         for (Media item : media) {
             String title = item.getTitle();
-            if (title.length() > 17) title = title.substring(0, 17) + "...";
+            if (title.length() > 20) title = title.substring(0, 17) + "...";
 
             String creator = "";
             float stars = 0;
@@ -268,21 +270,26 @@ public class WorkManager {
             if (item instanceof Book) {
                 Book book = (Book) item;
                 creator = book.getAuthor();
-                if (creator.length() > 17) creator = creator.substring(0, 17) + "...";
+                if (creator.length() > 20) creator = creator.substring(0, 17) + "...";
 
-                if (!item.getReviews().isEmpty()) {
-                    stars = item.getReviews().get(item.getReviews().size() - 1).getStars();
+                if (!book.getReviews().isEmpty()) {
+                    stars = book.getReviews().get(item.getReviews().size() - 1).getStars();
                 }
 
                 // Verifica se o item é um Film
             } else if (item instanceof Films) {
                 Films film = (Films) item;
                 creator = film.getDirection();
-                if (creator.length() > 17) creator = creator.substring(0, 17) + "...";
+                if (creator.length() > 20) creator = creator.substring(0, 17) + "...";
+                if (!film.getReviews().isEmpty()) {
+                    stars = film.getReviews().get(item.getReviews().size() - 1).getStars();
+                }
 
-                //Muda depois para pegar a ultima stars
-                if (!item.getReviews().isEmpty()) {
-                    stars = calculateAverageStars(item.getReviews());
+            } else if (item instanceof Show) {
+                Show show = (Show) item;
+                creator = "Vários";
+                if (!show.getReviews().isEmpty()) {
+                    stars = show.getReviews().get(item.getReviews().size() - 1).getStars();
                 }
             }
             // Imprime os dados formatados
