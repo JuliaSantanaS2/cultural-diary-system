@@ -17,6 +17,7 @@ public class Search {
         ClearScreen.clear();
     }
 
+
     //Serao implementados os metodos de busca
     public void mediaSearchMenu() {
         Scanner scanner = new Scanner(System.in);
@@ -71,33 +72,10 @@ public class Search {
 
     //Serao implementados os metodos de list
     public void mediaListMenu() {
-        Scanner scanner = new Scanner(System.in);
-        int option_list;
-
-        do {
-            System.out.println("<------------------------------->");
-            System.out.println("What would you like to do?");
-            System.out.println("1 - ");
-            System.out.println("2 - ");
-            System.out.println("3 - ");
-            System.out.println("<------------------------------->\n");
-            option_list = scanner.nextInt();
-
-            switch (option_list) {
-                case 1:
-                    System.out.println("Return1lis.");
-                    break;
-                case 2:
-                    System.out.println("Return2lis.");
-                    break;
-                case 3:
-                    System.out.println("Returnlist.");
-                    break;
-                default:
-                    System.out.println("Invalid option");
-            }
+        System.out.println("<------------------------------->");
+        System.out.println("List of All Registered Media:");
+        System.out.println("<------------------------------->");
+        workManager.printAllMedia();
         }
-        while (option_list != 3);
     }
 
-}
