@@ -15,6 +15,7 @@ import Module.Genre;
 import Module.Book;
 import Module.Review;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 //import static jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyles.title;
 
@@ -419,7 +420,55 @@ public class WorkManager {
             }
         }
     }
+//para fazer a busca por cada opção:
 
+    public List<Media> searchByTitle(String title) {
+        return media.stream()
+                .filter(m -> m.getTitle().toLowerCase().contains(title.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Book> searchBooksByAuthor(String author) {
+        return bookLibrary.stream()
+                .filter(b -> b.getAuthor().toLowerCase().contains(author.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Media> searchByGenre(String genre) {
+        return media.stream()
+                .filter(m -> m.getGenre().equalsIgnoreCase(genre))
+                .collect(Collectors.toList());
+    }
+
+    public List<Media> searchByYear(int year) {
+        return media.stream()
+                .filter(m -> m.getYearRelease() == year)
+                .collect(Collectors.toList());
+    }
+
+    public List<Book> searchBooksByISBN(String isbn) {
+        return bookLibrary.stream()
+                .filter(b -> b.getIsbn().equalsIgnoreCase(isbn))
+                .collect(Collectors.toList());
+    }
+
+    public List<Films> searchFilmsByDirector(String director) {
+        return filmLibrary.stream()
+                .filter(f -> f.getDirection().toLowerCase().contains(director.toLowerCase()))
+                .collect(Collectors.toList());
+    }
+
+    public List<Films> searchFilmsByCast(String actor) {
+        return filmLibrary.stream()
+                .filter(f -> f.getCast().stream().anyMatch(a -> a.toLowerCase().contains(actor.toLowerCase())))
+                .collect(Collectors.toList());
+    }
+
+    public List<Show> searchShowsByCast(String actor) {
+        return showLibrary.stream()
+                .filter(s -> s.getCast().stream().anyMatch(a -> a.toLowerCase().contains(actor.toLowerCase())))
+                .collect(Collectors.toList());
+    }
 
 
 }

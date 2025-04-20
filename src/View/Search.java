@@ -6,9 +6,10 @@ import Control.WorkManager;
 public class Search {
 
 
-    Screen screen ;
+    Screen screen;
 
     final WorkManager workManager;
+
     public Search(WorkManager workManager) {
         this.workManager = workManager;
     }
@@ -26,13 +27,17 @@ public class Search {
         System.out.println("<------------------------------->");
         System.out.println("Option for listing");
         System.out.println("1 - All lists");
-        System.out.println("2 - Individual lists ");
+        System.out.println("2 - Search");
         System.out.println("3 - Return to the main menu");
         System.out.println("<------------------------------->\n");
         option_listing = scanner.nextInt();
 
-        if (option_listing == 10) {
+        if (option_listing == 1) {
             workManager.printAllMedia();
+            return;
+        }
+        if (option_listing == 2) {
+            mediaSearchmenu2();
             return;
         }
 
@@ -66,8 +71,6 @@ public class Search {
             screen.start();
         }
 
-        //workManager.printAllMedia();
-
     }
 
     //Serao implementados os metodos de list
@@ -76,6 +79,88 @@ public class Search {
         System.out.println("List of All Registered Media:");
         System.out.println("<------------------------------->");
         workManager.printAllMedia();
-        }
     }
+
+
+    // Para fazer o print por caracteristica
+    public void mediaSearchmenu2() {
+        Scanner scanner = new Scanner(System.in);
+        int option;
+
+        do {
+            System.out.println("<------------------------------->");
+            System.out.println("Select a search option:");
+            System.out.println("1 - Search by title");
+            System.out.println("2 - Search book by author");
+            System.out.println("3 - Search by genre");
+            System.out.println("4 - Search by year");
+            System.out.println("5 - Search book by ISBN");
+            System.out.println("6 - Search film by director");
+            System.out.println("7 - Search film by cast");
+            System.out.println("8 - Search series by cast");
+            System.out.println("9 - Return to main menu");
+            System.out.println("<------------------------------->");
+            option = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (option) {
+                case 1:
+                    System.out.print("Enter title: ");
+                    String title = scanner.nextLine();
+                    workManager.searchByTitle(title).forEach(System.out::println);
+                    break;
+                case 2:
+                    System.out.print("Enter author: ");
+                    String author = scanner.nextLine();
+                    workManager.searchBooksByAuthor(author).forEach(System.out::println);
+                    break;
+                case 3:
+                    System.out.print("Enter genre: ");
+                    String genre = scanner.nextLine();
+                    workManager.searchByGenre(genre).forEach(System.out::println);
+                    break;
+                case 4:
+                    System.out.print("Enter year: ");
+                    int year = scanner.nextInt();
+                    workManager.searchByYear(year).forEach(System.out::println);
+                    break;
+                case 5:
+                    System.out.print("Enter ISBN: ");
+                    String isbn = scanner.nextLine();
+                    workManager.searchBooksByISBN(isbn).forEach(System.out::println);
+                    break;
+                case 6:
+                    System.out.print("Enter director: ");
+                    String director = scanner.nextLine();
+                    workManager.searchFilmsByDirector(director).forEach(System.out::println);
+                    break;
+                case 7:
+                    System.out.print("Enter actor/actress name: ");
+                    String actor = scanner.nextLine();
+                    workManager.searchFilmsByCast(actor).forEach(System.out::println);
+                    break;
+                case 8:
+                    System.out.print("Enter actor/actress name: ");
+                    String showActor = scanner.nextLine();
+                    workManager.searchShowsByCast(showActor).forEach(System.out::println);
+                    break;
+                case 9:
+                    System.out.println("Returning...");
+                    break;
+                default:
+                    System.out.println("❌ Invalid option.");
+            }
+
+        } while (option != 9);
+    }
+
+    public void searchByTitle() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the title to search:");
+        String input = scanner.nextLine().toLowerCase();
+
+        workManager.searchByTitle(input);
+    }
+
+}
 
