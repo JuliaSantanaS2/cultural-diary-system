@@ -21,7 +21,7 @@ public static void clear() {
                 Runtime.getRuntime().exec("clear");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
         }
     }
 

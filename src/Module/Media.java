@@ -73,4 +73,8 @@ public class Media {
     public List<Review> getReviews() {
         return listReviews;
     }
+
+    public String getGenre() {
+        return listGenres.get(0).getGenre();
+    }
 }
