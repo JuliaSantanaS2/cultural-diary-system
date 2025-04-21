@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Comparator;
-
+import java.util.TreeMap;
 import Module.Media;
 import Module.Films;
 import Module.Season;
@@ -16,6 +16,7 @@ import Module.Book;
 import Module.Review;
 import java.util.Collections;
 import java.util.stream.Collectors;
+import java.util.HashMap;
 
 //import static jdk.javadoc.internal.doclets.formats.html.markup.HtmlStyles.title;
 
@@ -470,5 +471,50 @@ public class WorkManager {
                 .collect(Collectors.toList());
     }
 
+    // Retornar a lista completa de Media
+    public List<Media> getAllMedia() {
+        return media;
+    }
 
-}
+
+    // Listar todos os filmes, livros e shows (por genero)
+    public Map<String, List<Media>> listMediaByGenre(){
+        Map<String, List<Media>> map = new HashMap<>();
+        for (Media m : media){
+            for (Genre g : m.getGenres()){
+                map.computeIfAbsent(g.getGenre(), k -> new ArrayList<>()).add(m);
+            }
+        }
+        return map;
+
+    }
+//Ordem alfabética
+    public List<Media> listMediaAlphabetically() {
+        return media.stream()
+                .sorted(Comparator.comparing(Media::getTitle))
+                .collect(Collectors.toList());
+    }
+
+// Ordem por ano
+    public Map<Integer, List<Media>> listMediaByYear() {
+        return media.stream()
+                .collect(Collectors.groupingBy(
+                        Media::getYearRelease,
+                        //já resolvi :/ (era o nome da variavel errado :/)
+                        TreeMap::new,
+                        Collectors.toList()
+                ));
+    }
+
+    public static float calculateAverage(Media m) {
+        var revs = m.getReviews();
+        if (revs.isEmpty()) return 0f;
+        if (m instanceof Book) {
+            return revs.get(revs.size() - 1).getStars();
+        } else {
+            float sum = 0;
+            for (var r : revs) sum += r.getStars();
+            return sum / revs.size();
+        }
+    }
+    }

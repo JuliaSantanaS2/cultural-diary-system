@@ -2,6 +2,9 @@ package View;
 
 import java.util.Scanner;
 import Control.WorkManager;
+import Module.Media;
+import java.util.List;
+import java.util.Map;
 
 public class Search {
 
@@ -75,11 +78,67 @@ public class Search {
 
     //Serao implementados os metodos de list
     public void mediaListMenu() {
-        System.out.println("<------------------------------->");
-        System.out.println("List of All Registered Media:");
-        System.out.println("<------------------------------->");
-        workManager.printAllMedia();
+        Scanner scanner = new Scanner(System.in);
+        int option;
+        do {
+            System.out.println("\n<------------------------------->");
+            System.out.println("List all media - choose criteria:");
+            System.out.println("1 - Alphabetical (A–Z)");
+            System.out.println("2 - By Genre");
+            System.out.println("3 - By Release Year");
+            System.out.println("4 - Return");
+            System.out.print("Option: ");
+            option = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (option) {
+                case 1 -> {
+                    List<Media> list = workManager.listMediaAlphabetically();
+                    printMediaTable(list);
+                }
+                case 2 -> {
+                    Map<String, List<Media>> byGenre = workManager.listMediaByGenre();
+                    for (var entry : byGenre.entrySet()) {
+                        System.out.println("\n🎬 Gênero: " + entry.getKey());
+                        printMediaTable(entry.getValue());
+                    }
+                }
+                case 3 -> {
+                    Map<Integer, List<Media>> byYear = workManager.listMediaByYear();
+                    for (var entry : byYear.entrySet()) {
+                        System.out.println("\n📅 Ano: " + entry.getKey());
+                        printMediaTable(entry.getValue());
+                    }
+                }
+                case 4 -> System.out.println("🔙 Returning to previous menu...");
+                default -> System.out.println("❌ Invalid option.");
+            }
+        } while (option != 4);
     }
+
+    /** Impressão tabulada das mídias */
+    private void printMediaTable(List<Media> mediaList) {
+        if (mediaList.isEmpty()) {
+            System.out.println("📭 Nenhuma mídia encontrada.");
+            return;
+        }
+        System.out.printf("%-30s | %-15s | %-6s | %-6s%n",
+                "Título", "Tipo", "Ano", "★ Aval");
+        System.out.println("---------------------------------------------------------------");
+        for (Media m : mediaList) {
+            String title = truncate(m.getTitle(), 30);
+            String type  = m.getClass().getSimpleName();
+            int    year  = m.getYearRelease();
+            float avg = WorkManager.calculateAverage(m);
+            System.out.printf("%-30s | %-15s | %-6d | %-6.1f%n",
+                    title, type, year, avg);
+        }
+    }
+
+    private String truncate(String s, int len) {
+        return s.length() > len ? s.substring(0, len - 3) + "..." : s;
+    }
+
 
 
     // Para fazer o print por caracteristica
