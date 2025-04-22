@@ -22,6 +22,8 @@ public class Show extends AudioVisualMedia {
         this.yearEnd = yearEnd;
     }
 
+    public int getYearEnd(){return yearEnd;}
+
     public void addSeason(Season season) {
         seasons.add(season);
     }

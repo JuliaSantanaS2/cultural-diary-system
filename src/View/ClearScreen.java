@@ -7,23 +7,10 @@ public static void clear() {
         System.out.println();
     }
 }
+/*
 
+ClearScreen.clear();
+System.out.println("🔙 Returning to previous menu...");
 
-    /* public static void clear() {
-        String os = System.getProperty("os.name"); // Detecta o sistema operacional
-
-        try {
-            if (os.contains("Windows")) {
-                // Para Windows, usamos o comando "cls" com "cmd /c"
-                Runtime.getRuntime().exec("cmd /c cls");  // Garanta que o comando seja executado corretamente
-            } else {
-                // Para sistemas Unix-like (Linux/Mac), usamos o comando "clear"
-                Runtime.getRuntime().exec("clear");
-            }
-        } catch (Exception e) {
-//            e.printStackTrace();
-        }
-    }
-
-     */
+*/
 }

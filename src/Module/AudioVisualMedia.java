@@ -13,7 +13,13 @@ public class AudioVisualMedia extends Media {
         super( seen, title, genres, yearRelease);
         this.originalTitle = originalTitle;
         this.whereWatch = whereWatch;
-        this.cast = new ArrayList<>();
+
+        if (cast != null) {
+            this.cast = new ArrayList<>(cast);
+        } else {
+            this.cast = new ArrayList<>();
+        }
+
     }
 
     public String getOriginalTitle() {

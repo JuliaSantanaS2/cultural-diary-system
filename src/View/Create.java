@@ -12,7 +12,6 @@ import java.util.Scanner;
 public class Create {
     Scanner scanner = new Scanner(System.in);
     final WorkManager workManager;
-    private Screen screen;
 
     public Create(WorkManager workManager) {
         this.workManager = workManager;
@@ -43,7 +42,8 @@ public class Create {
                     createFilm();
                     break;
                 case 4:
-                    System.out.println("Return.");
+                    ClearScreen.clear();
+                    System.out.println("🔙 Returning to previous menu...");
                     break;
                 default:
                     System.out.println("Invalid option");
@@ -59,9 +59,8 @@ public class Create {
         List<Genre> allGenres = workManager.getGenres();
         List<Genre> selectedGenres = new ArrayList<>();
 
-
         while (true) {
-            System.out.println("Selecione um gênero (digite o número correspondente):");
+            System.out.println("Select a genre (type the corresponding number):");
             for (int i = 0; i < allGenres.size(); i++) {
                 System.out.println((i + 1) + " - " + allGenres.get(i).getGenre());
             }
@@ -72,57 +71,59 @@ public class Create {
                 selectedGenres.add(genre);
             }
 
-            System.out.println("Deseja adicionar mais um gênero? (s/n)");
+            System.out.println("Do you want to add another genre? (y/n)");
             String response = scanner.nextLine().trim().toLowerCase();
-            if (!response.equals("s")) {
+            if (!response.equals("y")) {
                 break;
             }
         }
 
         if (selectedGenres.isEmpty()) {
-            System.out.println("⚠️ A lista de gêneros não pode estar vazia. Adicione pelo menos um gênero.");
+            System.out.println("⚠️ Genre list cannot be empty. Please add at least one genre.");
             return addGenresMedia();
         }
         return selectedGenres;
     }
-    // Method to confirm if the user has a copy of the media or seen it
+
+    // Method to confirm if the user has a copy of the media or has seen it
     public boolean confirmationBoolean() {
-        boolean result = false;
-        while (!result) {
-            System.out.println("[1] - Sim");
-            System.out.println("[2] - Não");
-            System.out.print("Digite a opção desejada: ");
+        while (true) {
+            System.out.println("[1] - Yes");
+            System.out.println("[2] - No");
+            System.out.print("Enter your choice: ");
 
-            int input = scanner.nextInt();
+            try {
+                int input = Integer.parseInt(scanner.nextLine());
 
-            if (input == 1) {
-                return true;
-            } else if (input == 2) {
-                return false;
-            } else {
-                System.out.println("⚠️ Opção inválida. Tente novamente.");
+                if (input == 1) {
+                    return true;
+                } else if (input == 2) {
+                    return false;
+                } else {
+                    System.out.println("⚠️ Invalid option. Please try again.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("⚠️ Invalid input. Please enter a number.");
             }
         }
-        return false;
     }
 
     // Method to confirm if the user wants to add another media
     public void addAnotherMedia_Question() {
-        int result = 0;
-        while (result == 0) {
-            System.out.println("Você deseja adcionar outro?");
-            System.out.println("[1] - Sim");
-            System.out.println("[2] - Não");
-            System.out.print("Digite a opção desejada: ");
+        while (true) {
+            System.out.println("Would you like to add another?");
+            System.out.println("[1] - Yes");
+            System.out.println("[2] - No");
+            System.out.print("Enter your choice: ");
 
             String input = scanner.nextLine();
 
             if (input.equals("1")) {
-                createBook();
+                createBook(); // You can adjust this to be dynamic later
             } else if (input.equals("2")) {
-                result = 1;
+                break;
             } else {
-                System.out.println("⚠️ Opção inválida. Tente novamente.");
+                System.out.println("⚠️ Invalid option. Please try again.");
             }
         }
     }
@@ -131,93 +132,89 @@ public class Create {
     public void createBook() {
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite o titulo do Livro:");
+        System.out.println("Enter the book title:");
         String title = scanner.nextLine();
 
-        System.out.println("Digite o titulo original do Livro:");
+        System.out.println("Enter the original title of the book:");
         String originalTitle = scanner.nextLine();
         if (originalTitle.isEmpty()) {
             originalTitle = title;
         }
 
         System.out.println("<----------------------------->");
-        System.out.println("Escolhas os Generos do Livro:");
+        System.out.println("Choose the genres of the book:");
         List<Genre> genres = addGenresMedia();
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite o ano de Publicação do Livro:");
+        System.out.println("Enter the year of publication:");
         int yearRelease = Integer.parseInt(scanner.nextLine());
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite o Autor do Livro:");
+        System.out.println("Enter the author of the book:");
         String author = scanner.nextLine();
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite a Editora do Livro:");
+        System.out.println("Enter the publisher of the book:");
         String publisher = scanner.nextLine();
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite o ISBN do Livro:");
+        System.out.println("Enter the ISBN of the book:");
         String isbn = scanner.nextLine();
 
         System.out.println("<----------------------------->");
-        System.out.println("Você tem Copia do  Livro:");
+        System.out.println("Do you own a copy of the book?");
         boolean copy = confirmationBoolean();
 
         System.out.println("<----------------------------->");
-        System.out.println("Você Já leu o Livro?:");
+        System.out.println("Have you read the book?");
         boolean seen = confirmationBoolean();
 
         workManager.createBook(seen, title, genres, yearRelease, author, publisher, isbn, copy);
         addAnotherMedia_Question();
-
-
     }
 
     public void createFilm() {
         System.out.println("<----------------------------->");
-        System.out.println("Digite o titulo do Filme:");
+        System.out.println("Enter the movie title:");
         String title_films = scanner.nextLine();
 
-        System.out.println("Digite o titulo original do Livro:");
+        System.out.println("Enter the original title of the movie:");
         String originalTitle_films = scanner.nextLine();
 
         System.out.println("<----------------------------->");
-        System.out.println("Escolhas os Generos do Filme:");
+        System.out.println("Choose the genres of the movie:");
         List<Genre> genres_films = addGenresMedia();
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite o ano de lançamento:");
+        System.out.println("Enter the release year:");
         int yearRelease_films = Integer.parseInt(scanner.nextLine());
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite a duração do filme em minutos:");
+        System.out.println("Enter the movie duration in minutes:");
         int runningtime_films = Integer.parseInt(scanner.nextLine());
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite o Direção do Filme:");
+        System.out.println("Enter the director of the movie:");
         String direction_films = scanner.nextLine();
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite a Roterista do Filme:");
+        System.out.println("Enter the screenwriter of the movie:");
         String screenplay_films = scanner.nextLine();
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite o elenco do Filme:");
-        System.out.println("<--Digite separado por ',' (Virgula)-->");
+        System.out.println("Enter the cast of the movie:");
+        System.out.println("<--Separate with ',' (comma)-->");
         String input_cast = scanner.nextLine();
         List<String> cast = Arrays.asList(input_cast.split(",\\s*"));
 
-
         System.out.println("<----------------------------->");
-        System.out.println("Digite onde assistir o filme:");
-        System.out.println("<--Digite separado por ',' (Virgula)-->");
+        System.out.println("Enter where to watch the movie:");
+        System.out.println("<--Separate with ',' (comma)-->");
         String input_whereWatch = scanner.nextLine();
         List<String> whereWatch = Arrays.asList(input_whereWatch.split(",\\s*"));
 
-
         System.out.println("<----------------------------->");
-        System.out.println("Você Já assistiu o Filme?:");
+        System.out.println("Have you watched the movie?");
         boolean seen = confirmationBoolean();
 
         workManager.createFilm(cast, seen, title_films, genres_films, yearRelease_films, originalTitle_films, whereWatch, direction_films, runningtime_films, screenplay_films);
@@ -225,16 +222,17 @@ public class Create {
         addAnotherMedia_Question();
     }
 
+
     public void menuShow() {
         Scanner scanner = new Scanner(System.in);
         int option_show_menu;
 
         do {
             System.out.println("<----------------------------->");
-            System.out.println("Selecione a opção:");
-            System.out.println("[1] - Adicionar uma nova série");
-            System.out.println("[2] - Adicionar uma nova temporada");
-            System.out.println("[3] - Voltar ao menu anterior");
+            System.out.println("Select an option:");
+            System.out.println("[1] - Add a new series");
+            System.out.println("[2] - Add a new season");
+            System.out.println("[3] - Return to the previous menu");
             System.out.println("<----------------------------->");
             option_show_menu = scanner.nextInt();
 
@@ -246,11 +244,12 @@ public class Create {
                     createSeason();
                     break;
                 case 3:
+                    ClearScreen.clear();
+                    System.out.println("🔙 Returning to previous menu...");
                     menuCreat();
-                    System.out.println("Retornar.");
                     break;
                 default:
-                    System.out.println("Opção inválida");
+                    System.out.println("Invalid option");
             }
         }
         while (option_show_menu != 3);
@@ -261,39 +260,38 @@ public class Create {
 
     public void createShow() {
         System.out.println("<----------------------------->");
-        System.out.println("Digite o titulo da Serie:");
+        System.out.println("Enter the title of the series:");
         String title = scanner.nextLine();
 
-        System.out.println("Digite o titulo original da Serie:");
+        System.out.println("Enter the original title of the series:");
         String originalTitle = scanner.nextLine();
 
         System.out.println("<----------------------------->");
-        System.out.println("Escolhas os Generos da Serie:");
+        System.out.println("Choose the genres of the series:");
         List<Genre> genres = addGenresMedia();
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite o elenco do Serie:");
-        System.out.println("<--Digite separado por ',' (Virgula)-->");
+        System.out.println("Enter the cast of the series:");
+        System.out.println("<--Separate by ',' (comma)-->");
         String input_cast = scanner.nextLine();
         List<String> cast = Arrays.asList(input_cast.split(",\\s*"));
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite o ano de Lançamento da Serie:");
+        System.out.println("Enter the release year of the series:");
         int yearRelease = Integer.parseInt(scanner.nextLine());
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite o ano de Lançamento de Encerramento:");
+        System.out.println("Enter the end year of the series:");
         int yearEnd = Integer.parseInt(scanner.nextLine());
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite onde assistir o filme:");
-        System.out.println("<--Digite separado por ',' (Virgula)-->");
+        System.out.println("Enter where to watch the series:");
+        System.out.println("<--Separate by ',' (comma)-->");
         String input_whereWatch = scanner.nextLine();
         List<String> whereWatch = Arrays.asList(input_whereWatch.split(",\\s*"));
 
-
         System.out.println("<----------------------------->");
-        System.out.println("Você já assistiu a Serie?");
+        System.out.println("Have you watched the series?");
         boolean seen = confirmationBoolean();
 
         workManager.createShow(cast, seen, title, genres, yearRelease, originalTitle, whereWatch, yearEnd);
@@ -303,29 +301,29 @@ public class Create {
     public void createSeason() {
 
         System.out.println("<----------------------------->");
-        System.out.println("Qual Livro você deseja fazer a Review?:");
+        System.out.println("Which series do you want to review?");
         String title = selectShowFromLibrary();
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite o número da temporada:");
+        System.out.println("Enter the season number:");
         int seasonNumber = Integer.parseInt(scanner.nextLine());
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite a quantidade de episódios da temporada:");
+        System.out.println("Enter the number of episodes in the season:");
         int episodeCount = Integer.parseInt(scanner.nextLine());
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite a data de lançamento da temporada:");
-        System.out.println("Formato dd/mm/aaaa:");
+        System.out.println("Enter the season's release date:");
+        System.out.println("Format dd/mm/yyyy:");
         String releaseDate = scanner.nextLine();
 
-        workManager.createSeason(title,seasonNumber, episodeCount, releaseDate);
+        workManager.createSeason(title, seasonNumber, episodeCount, releaseDate);
         workManager.getShow();
     }
 
     public String selectShowFromLibrary() {
         System.out.println("<----------------------------->");
-        System.out.println("Digite o número da série que você deseja selecionar:");
+        System.out.println("Enter the number of the series you want to select:");
 
         List<String> show = workManager.getShowName();
         for (int i = 0; i < show.size(); i++) {
@@ -337,7 +335,7 @@ public class Create {
             String input = scanner.nextLine().trim();
 
             if (input.isEmpty()) {
-                System.out.println("Entrada vazia! Digite um número.");
+                System.out.println("Empty input! Please enter a number.");
                 continue;
             }
 
@@ -345,21 +343,17 @@ public class Create {
                 showIndex = Integer.parseInt(input) - 1;
 
                 if (showIndex < 0 || showIndex >= show.size()) {
-                    System.out.println("Número fora do intervalo. Tente novamente.");
+                    System.out.println("Number out of range. Try again.");
                     continue;
                 }
 
                 break;
             } catch (NumberFormatException e) {
-                System.out.println("Entrada inválida! Digite apenas números.");
+                System.out.println("Invalid input! Please enter numbers only.");
             }
         }
-
         return show.get(showIndex);
     }
-
-
-
 }
 
 

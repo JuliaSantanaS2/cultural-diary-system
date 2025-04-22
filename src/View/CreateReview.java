@@ -17,44 +17,40 @@ import java.util.Scanner;
 public class CreateReview {
     Scanner scanner = new Scanner(System.in);
     final WorkManager workManager;
-
-
+    private Screen screen;
 
     public CreateReview(WorkManager workManager) {
         this.workManager = workManager;
      }
 
-
-
     public String dateNow() {
         LocalDate date = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("DD/MM/YYYY");
         String formattedDate = date.format(formatter);
         return formattedDate;
     }
 
     public void messager(int result) {
         if (result == 0) {
-            System.out.println("Review criada com sucesso!");
+            System.out.println("Review created successfully!");
         } else if (result == 1) {
-            System.out.println("Livro não encontrado.");
+            System.out.println("Book not found.");
         } else if (result == 2) {
-            System.out.println("Você ainda não viu esse livro.");
-        }
-        else {
-            System.out.println("Erro ao criar a review.");
+            System.out.println("You haven't read this book yet.");
+        } else {
+            System.out.println("Error creating the review.");
         }
     }
 
+
     public void showCreateReview() {
 
-        int result;
         System.out.println("<----------------------------->");
-        System.out.println("Escolha o tipo de mídia:");
-        System.out.println("1. Livro");
-        System.out.println("2. Filme");
-        System.out.println("3. Série/Temporada");
-        System.out.println("5. Voltar");
+        System.out.println("Choose the type of media:");
+        System.out.println("1. Book");
+        System.out.println("2. Film");
+        System.out.println("3. Series/Season");
+        System.out.println("4. Back");
 
         String option = scanner.nextLine();
 
@@ -69,42 +65,40 @@ public class CreateReview {
                 createReviewShowSerieData();
                 break;
             case "4":
-                //
-                break;
-            case "5":
-                // Voltar ao menu anterior
+                ClearScreen.clear();
+                System.out.println("🔙 Returning to previous menu...");
+                screen.start();
                 break;
             default:
-                System.out.println("Opção inválida.");
+                System.out.println("Invalid option.");
         }
     }
 
+
     public void createReviewBookData() {
 
-
         System.out.println("<----------------------------->");
-        System.out.println("Qual Livro você deseja fazer a Review?:");
+        System.out.println("Which book would you like to review?");
         String title = selectBookFromLibrary();
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite a sua Review sobre o Book:");
+        System.out.println("Write your review about the book:");
         String comment = scanner.nextLine();
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite sua Stars entre 1 e 5:");
+        System.out.println("Rate the book (1 to 5 stars):");
         int stars = Integer.parseInt(scanner.nextLine());
 
-        System.out.println("<----------------------------->");
-        System.out.println("Digite sua Stars entre 1 e 5:");
         String reviewDate = dateNow();
 
-        int result = workManager.createReviewBook(title,comment, stars, reviewDate);
+        int result = workManager.createReviewBook(title, comment, stars, reviewDate);
         messager(result);
     }
 
+
     public String selectBookFromLibrary() {
         System.out.println("<----------------------------->");
-        System.out.println("Digite o título do livro que você deseja selecionar:");
+        System.out.println("Enter the title of the book you want to select:");
 
         List<String> books = workManager.getBooksName();
         for (int i = 0; i < books.size(); i++) {
@@ -116,20 +110,19 @@ public class CreateReview {
     }
 
 
-    // Método para criar uma review de filme
     public void createReviewFilmsData() {
 
 
         System.out.println("<----------------------------->");
-        System.out.println("Qual Filme você deseja fazer a Review?:");
+        System.out.println("Which movie would you like to review?");
         String title = selectFilmFromLibrary();
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite a sua Review sobre o Filme:");
+        System.out.println("Write your review about the movie:");
         String comment = scanner.nextLine();
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite sua Stars entre 1 e 5:");
+        System.out.println("Enter your rating (stars) between 1 and 5:");
         int stars = Integer.parseInt(scanner.nextLine());
 
         String reviewDate = dateNow();
@@ -140,7 +133,7 @@ public class CreateReview {
 
     public String selectFilmFromLibrary() {
         System.out.println("<----------------------------->");
-        System.out.println("Digite o título do Filme que você deseja selecionar:");
+        System.out.println("Enter the title of the movie you want to select:");
 
         List<String> film = workManager.getFilmName();
         for (int i = 0; i < film.size(); i++) {
@@ -151,23 +144,22 @@ public class CreateReview {
         return film.get(nameBookIndex);
     }
 
-    // Método para criar uma review de série
     public void createReviewShowSerieData() {
 
         System.out.println("<----------------------------->");
-        System.out.println("Qual Serie você deseja fazer a Review?:");
+        System.out.println("Which series would you like to review?");
         String title = selectShowFromLibrary();
 
         System.out.println("<----------------------------->");
-        System.out.println("Qual Temporada você deseja fazer a Review?:");
+        System.out.println("Which season would you like to review?");
         int seasonNumber = selectSeasonFromLibrary(title);
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite a sua Review sobre o Serie:");
+        System.out.println("Write your review about the series:");
         String comment = scanner.nextLine();
 
         System.out.println("<----------------------------->");
-        System.out.println("Digite sua Stars entre 1 e 5:");
+        System.out.println("Enter your rating (stars) from 1 to 5:");
         int stars = Integer.parseInt(scanner.nextLine());
 
         String reviewDate = dateNow();
@@ -179,7 +171,7 @@ public class CreateReview {
 
     public String selectShowFromLibrary() {
         System.out.println("<----------------------------->");
-        System.out.println("Digite o título do Serie que você deseja selecionar:");
+        System.out.println("Enter the title of the series you want to select:");
 
         List<String> film = workManager.getShowName();
         for (int i = 0; i < film.size(); i++) {
@@ -192,7 +184,7 @@ public class CreateReview {
 
     public int selectSeasonFromLibrary(String title) {
         System.out.println("<----------------------------->");
-        System.out.println("Digite o número da Temporada que você deseja selecionar:");
+        System.out.println("Enter the season number you want to select:");
 
         List<Integer> seasons = workManager.getSeasonsByShowName(title);
         for (int i = 0; i < seasons.size(); i++) {
