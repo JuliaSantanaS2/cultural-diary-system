@@ -16,17 +16,41 @@ import Module.AudioVisualMedia;
 
 import Control.WorkManager;
 
-
+/**
+ * Classe da camada View responsável por gerenciar a interface com o usuário
+ * relacionada à busca e listagem de mídias culturais na biblioteca.
+ * Interage com o {@link Control.WorkManager} para obter os dados filtrados e/ou ordenados
+ * e os formata para exibição tabular no console.
+ * Utiliza um {@link java.util.Scanner} compartilhado, passado pelo construtor.
+ */
 public class Search {
 
     final WorkManager workManager;
     private Scanner scanner;
 
+    /**
+     * Construtor da classe Search.
+     * Recebe instâncias do WorkManager e do Scanner compartilhado.
+     *
+     * @param workManager A instância do {@link Control.WorkManager} para acesso aos dados da aplicação.
+     *                    Não pode ser nulo.
+     * @param scanner     A instância do {@link java.util.Scanner} compartilhada, usada para
+     *                    ler a entrada do usuário nos menus e prompts de busca/listagem.
+     *                    Não pode ser nulo.
+     */
     public Search(WorkManager workManager) {
         this.workManager = workManager;
         this.scanner = new Scanner(System.in);
     }
 
+
+    /**
+     * Exibe e gerencia o menu principal de busca específica.
+     * Permite ao usuário escolher um critério (Título, Gênero, Ano, Pessoa, ISBN)
+     * para buscar mídias na biblioteca. Chama os métodos auxiliares correspondentes
+     * para realizar a busca e exibir os resultados.
+     * O loop continua até o usuário escolher retornar ao menu anterior (Search/List Menu).
+     */
     public void mediaSearchMenu() {
         int option;
 
@@ -77,6 +101,11 @@ public class Search {
 
     }
 
+    /**
+     * Método auxiliar privado que lida com a busca por título.
+     * Solicita o termo de busca ao usuário, chama o {@link WorkManager#searchByTitle},
+     * e exibe os resultados encontrados em formato de tabela usando {@link #printMediaTable}.
+     */
     private void searchByTitleOption() {
         System.out.print("Enter the title: ");
         String title = scanner.nextLine();
@@ -86,6 +115,12 @@ public class Search {
         pauseForUser();
     }
 
+    /**
+     * Método auxiliar privado que lida com a busca por gênero.
+     * Permite ao usuário selecionar um gênero da lista disponível (usando {@link #selectSingleGenreFilter}),
+     * chama o {@link WorkManager#searchByGenre} com o nome do gênero selecionado,
+     * e exibe os resultados encontrados em formato de tabela.
+     */
     private void searchByGenreOption() {
         System.out.print("Enter the genre name: ");
         String genreName = scanner.nextLine();
@@ -95,6 +130,11 @@ public class Search {
         pauseForUser();
     }
 
+    /**
+     * Método auxiliar privado que lida com a busca por ano de lançamento.
+     * Solicita o ano ao usuário, chama o {@link WorkManager#searchByYear},
+     * e exibe os resultados em formato de tabela.
+     */
     private void searchByYearOption() {
         System.out.print("Enter the release year: ");
         int year;
@@ -110,6 +150,12 @@ public class Search {
         pauseForUser();
     }
 
+    /**
+     * Método auxiliar privado que lida com a busca por pessoa (Autor, Diretor, Elenco).
+     * Solicita o nome da pessoa e o escopo da busca (tipo de mídia/papel).
+     * Chama os métodos de busca apropriados no {@link WorkManager}, combina os resultados,
+     * remove duplicatas e exibe a lista final em formato de tabela.
+     */
     private void searchByPersonOption() {
         System.out.print("Enter the person's name (Author, Director, Actor/Actress): ");
         String personName = scanner.nextLine();
@@ -149,11 +195,29 @@ public class Search {
     }
 
     // Helper para distinct em Streams (requer import java.util.function.Function e java.util.concurrent.ConcurrentHashMap)
+    /**
+     * Predicado auxiliar estático que pode ser usado com {@code Stream.filter()}
+     * para remover elementos duplicados com base em uma chave extraída por uma função.
+     * Utiliza um {@link java.util.concurrent.ConcurrentHashMap} internamente para
+     * rastrear as chaves já vistas de forma eficiente e thread-safe (embora a thread-safety
+     * não seja estritamente necessária neste contexto single-threaded).
+     *
+     * @param <T> O tipo dos elementos no Stream.
+     * @param keyExtractor Uma {@link java.util.function.Function} que, dado um elemento `T`,
+     *                     extrai a chave ({@code Object}) usada para determinar a unicidade.
+     * @return Um {@link java.util.function.Predicate} que retorna `true` para o primeiro
+     *         elemento encontrado com uma chave específica, e `false` para os subsequentes.
+     */
     public static <T> java.util.function.Predicate<T> distinctByKey(java.util.function.Function<? super T, ?> keyExtractor) {
         java.util.Set<Object> seen = java.util.concurrent.ConcurrentHashMap.newKeySet();
         return t -> seen.add(keyExtractor.apply(t));
     }
 
+    /**
+     * Método auxiliar privado que lida com a busca de livros por ISBN.
+     * Solicita o ISBN ao usuário, chama o {@link WorkManager#searchBooksByISBN},
+     * e exibe o resultado (geralmente um único livro ou nenhum) em formato de tabela.
+     */
     private void searchByIsbnOption() {
         System.out.print("Enter the book's ISBN: ");
         String isbn = scanner.nextLine();
@@ -169,29 +233,11 @@ public class Search {
 
 
     /**
-     * Reads an integer from the scanner with basic error handling
+     * Exibe e gerencia o menu para listagem de mídias.
+     * Permite ao usuário escolher entre uma listagem simples (alfabética) ou
+     * uma listagem avançada com opções de filtro e ordenação.
+     * O loop continua até o usuário escolher retornar ao menu anterior (Search/List Menu).
      */
-    private int readIntInput() {
-        while (true) {
-            try {
-                int value = Integer.parseInt(scanner.nextLine().trim());
-                return value;
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter an integer.");
-                System.out.print("Option: ");
-            }
-        }
-    }
-
-    /**
-     * Pauses execution, waiting for the user to press Enter
-     */
-    private void pauseForUser() {
-        System.out.println("\nPress Enter to continue...");
-        scanner.nextLine();
-    }
-
-
     public void mediaListMenu() {
         Scanner scanner = new Scanner(System.in);
         int option;
@@ -224,6 +270,12 @@ public class Search {
         } while (option != 3);
     }
 
+    /**
+     * Gerencia a coleta de opções de filtragem (por ano, por gênero) e
+     * ordenação (por avaliação, alfabética) do usuário para a listagem avançada.
+     * Chama o {@link WorkManager#getFilteredAndSortedMedia} com as opções selecionadas
+     * e exibe a lista resultante formatada em tabela usando {@link #printMediaTable}.
+     */
     public void sortingAndFilter() {
 
 
@@ -275,6 +327,14 @@ public class Search {
         printMediaTable(resultList);
     }
 
+    /**
+     * Apresenta a lista de gêneros disponíveis e permite ao usuário selecionar um
+     * para usar como filtro na listagem avançada ou na busca por gênero.
+     * Inclui uma opção para não selecionar nenhum gênero (cancelar filtro/busca).
+     *
+     * @return O objeto {@link Genre} selecionado pelo usuário, ou {@code null} se o usuário
+     *         escolher a opção "None / Cancel" ou se não houver gêneros disponíveis.
+     */
     private Genre selectSingleGenreFilter() {
         Scanner scanner = new Scanner(System.in);
         ClearScreen.clear();
@@ -296,7 +356,14 @@ public class Search {
         return null;
     }
 
-    // This method prints the media list in a table format
+    /**
+     * Imprime uma lista de objetos {@link Media} em um formato de tabela formatado no console.
+     * A tabela inclui colunas para Título, Tipo (Classe), Ano, Avaliação Média e Gêneros.
+     * Trunca títulos e listas de gêneros que excedam a largura definida para as colunas.
+     * Exibe uma mensagem se a lista estiver vazia ou nula.
+     *
+     * @param mediaList A {@code List<Media>} a ser impressa na tabela. Pode ser nula ou vazia.
+     */
     private void printMediaTable(List<Media> mediaList) {
         if (mediaList.isEmpty()) {
             System.out.println("📭 No media found..");
@@ -326,10 +393,32 @@ public class Search {
     }
 
 
+    /**
+     * Trunca uma {@code String} para um comprimento máximo especificado, adicionando "..." no final
+     * se a string original for mais longa que o limite. Lida com strings nulas retornando uma string vazia.
+     *
+     * @param s   A string a ser truncada. Pode ser nula.
+     * @param len O comprimento máximo desejado para a string resultante (incluindo os "..." se aplicável).
+     *            Deve ser pelo menos 3 para que a adição de "..." faça sentido.
+     * @return A string original se for nula, vazia ou não exceder `len`. Caso contrário, retorna
+     *         a string truncada para `len-3` caracteres seguida por "...".
+     */
     private String truncate(String s, int len) {
         return s.length() > len ? s.substring(0, len - 3) + "..." : s;
     }
 
+    /**
+     * Imprime uma lista de mídias com detalhes completos e formatados no console.
+     * Para cada mídia, exibe informações comuns (título, ano, gêneros, status, avaliação)
+     * e detalhes específicos do tipo (autor/ISBN para Livro; diretor/duração para Filme;
+     * período/temporadas/reviews de temporadas para Série).
+     * Utiliza métodos auxiliares {@link #printReviewsForMedia} e {@link #printStringList}
+     * para formatar partes da saída.
+     * Exibe um título fornecido acima da lista e mensagens apropriadas se a lista for nula ou vazia.
+     *
+     * @param mediaList A {@code List<Media>} a ser impressa detalhadamente. Pode ser nula ou vazia.
+     * @param titleForList Um {@code String} contendo o título a ser exibido antes da lista (ex: "Search Results").
+     */
     private void printDetailedMediaList(List<Media> mediaList, String titleForList) {
         System.out.println("\n<=======================================================>");
         System.out.println("          " + titleForList);
@@ -345,14 +434,11 @@ public class Search {
         for (Media m : mediaList) {
             System.out.println("\n--- Item #" + count++ + " -----------------------------------------");
 
-            // --- Common Information (from the Media class) ---
             System.out.println("  Title: " + m.getTitle());
 
-            // Tries to get the original title if it's an AudioVisualMedia
             if (m instanceof AudioVisualMedia) {
                 AudioVisualMedia avm = (AudioVisualMedia) m;
 
-                // Only displays if it's different from the main title and not null
                 if (avm.getOriginalTitle() != null && !avm.getOriginalTitle().equalsIgnoreCase(m.getTitle())) {
                     System.out.println("  Original Title: " + avm.getOriginalTitle());
                 }
@@ -370,7 +456,6 @@ public class Search {
             System.out.println("  Seen/Read? " + (m.isSeen() ? "Yes" : "No"));
             System.out.printf("  Review: %.1f ★%n", WorkManager.calculateAverage(m));
 
-            //
             if (m instanceof Book) {
                 Book book = (Book) m;
                 System.out.println("  Type: Book");
@@ -378,7 +463,6 @@ public class Search {
                 System.out.println("  Publisher: " + book.getPublisher());
                 System.out.println("  ISBN: " + book.getIsbn());
                 System.out.println("  Do you own a copy? " + (book.getCopy() ? "Sim" : "Não"));
-                // Prints the book reviews using the auxiliary method
                 printReviewsForMedia(m.getReviews(), "  ");
 
             } else if (m instanceof Films) {
@@ -388,7 +472,6 @@ public class Search {
                 System.out.println("  Screenplay: " + film.getScreenplay());
                 System.out.println("  Duration: " + film.getRunningtime() + " min");
 
-                // Prints Cast and Where to Watch using the auxiliary method
                 printStringList(film.getCast(), "  Cast: ");
                 printStringList(film.getWhereWatch(), "  Where to Watch: ");
                 printReviewsForMedia(m.getReviews(), "  ");
@@ -404,17 +487,15 @@ public class Search {
                 printStringList(show.getCast(), "  Cast: ");
                 printStringList(show.getWhereWatch(), "  Where to Watch: ");
 
-                // Season Details
+
                 if (show.getSeasons() != null && !show.getSeasons().isEmpty()) {
                     System.out.println("  Seasons (" + show.getSeasons().size() + "):");
-                    // Iterates over each season of the show
+
                     for (Season season : show.getSeasons()) {
-                        // Checks for null season
                         if (season != null) {
                             System.out.println("    - Season " + season.getSeasonNumber() + ":");
                             System.out.println("      Episodes: " + season.getEpisodeCount());
                             System.out.println("      Release: " + season.getReleaseDate());
-                            // Prints reviews for this season using the auxiliary method
                             printReviewsForMedia(season.getReviews(), "      ");
                         } else {
                             System.out.println("    - (Error: null season found)");
@@ -423,9 +504,9 @@ public class Search {
                 } else {
                     System.out.println("  Seasons: (No seasons registered)");
                 }
-                // General reviews are not printed for Show, as they are found in the seasons
+
             } else {
-                // Case for other types of Media that may exist
+
                 System.out.println("  Type: Unknown Media");
             }
 
@@ -434,6 +515,15 @@ public class Search {
         System.out.println("---------------------------------------------------");
     }
 
+    /**
+     * Método auxiliar privado para imprimir uma lista de {@link Review}s com um prefixo
+     * de indentação especificado. Formata cada review usando seu método `toString()`.
+     * Lida com listas nulas ou vazias e reviews nulas dentro da lista.
+     *
+     * @param reviews A {@code List<Review>} a ser impressa. Pode ser nula ou vazia.
+     * @param prefix Uma {@code String} contendo os espaços ou caracteres a serem impressos
+     *               antes de cada linha de review para indentação (ex: "  ", "      ").
+     */
     private void printReviewsForMedia(List<Review> reviews, String prefix) {
         if (reviews != null && !reviews.isEmpty()) {
             System.out.println(prefix + "Reviews:");
@@ -450,6 +540,15 @@ public class Search {
         }
     }
 
+    /**
+     * Método auxiliar privado para formatar e imprimir uma lista de {@code String}s
+     * (como elenco ou locais para assistir) como uma única linha, separada por vírgulas.
+     * Exibe um rótulo antes da lista. Lida com listas nulas/vazias e strings vazias/nulas
+     * dentro da lista, exibindo "(Not specified)" nesses casos.
+     *
+     * @param list A {@code List<String>} a ser formatada e impressa. Pode ser nula ou vazia.
+     * @param label A {@code String} de rótulo a ser impressa antes da lista (ex: "Cast: ").
+     */
     private void printStringList(List<String> list, String label) {
         String content = "(Not specified)";
 
@@ -466,6 +565,36 @@ public class Search {
 
         System.out.println(label + content);
     }
+
+    /**
+     * Lê um input inteiro do usuário de forma segura, tratando {@link InputMismatchException}.
+     * Usa o {@link Scanner} compartilhado passado no construtor.
+     *
+     * @return O inteiro lido do usuário.
+     */
+    private int readIntInput() {
+        while (true) {
+            try {
+                int value = Integer.parseInt(scanner.nextLine().trim());
+                return value;
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter an integer.");
+                System.out.print("Option: ");
+            }
+        }
+    }
+
+    /**
+     * Pausa a execução do programa e aguarda que o usuário pressione a tecla Enter
+     * para continuar. Útil para permitir a leitura de resultados ou mensagens.
+     * Usa o {@link Scanner} compartilhado.
+     */
+    private void pauseForUser() {
+        System.out.println("\nPress Enter to continue...");
+        scanner.nextLine();
+    }
+
+
 
 }
 

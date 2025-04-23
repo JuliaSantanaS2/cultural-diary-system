@@ -10,16 +10,34 @@ import java.util.List;
 import java.util.Scanner;
 
 
-
-
+/**
+ * Classe da camada View responsável por gerenciar a interface com o usuário
+ * para a criação de novas mídias (livros, filmes, séries e temporadas).
+ * Coleta os dados necessários através de menus e prompts no console e
+ * interage com o {@link Control.WorkManager} para registrar os novos itens.
+ * Esta classe gerencia seu próprio {@link java.util.Scanner} para entrada.
+ */
 public class Create {
     Scanner scanner = new Scanner(System.in);
     final WorkManager workManager;
 
+    /**
+     * Construtor da classe Create. Recebe a instância do WorkManager.
+     *
+     * @param workManager A instância do {@link Control.WorkManager} usada para
+     *                    acessar e modificar os dados da aplicação (adicionar mídias, obter gêneros, etc.).
+     *                    Não pode ser nulo.
+     */
     public Create(WorkManager workManager) {
         this.workManager = workManager;
     }
 
+    /**
+     * Exibe e gerencia o menu principal para a criação de novas mídias.
+     * Permite ao usuário escolher entre adicionar um novo livro, filme, ou entrar
+     * no submenu de séries/temporadas. O menu continua em loop até que o usuário
+     * escolha a opção de retornar ao menu anterior (Registro).
+     */
     public int menuCreat() {
         Scanner scanner = new Scanner(System.in);
         int option_create_menu;
@@ -57,7 +75,15 @@ public class Create {
 
     }
 
-    // Method to add genres to the media
+    /**
+     * Gerencia a seleção de um ou mais gêneros pelo usuário a partir da lista
+     * de gêneros disponíveis no {@link WorkManager}.
+     * Garante que pelo menos um gênero seja selecionado antes de retornar.
+     *
+     * @return Uma {@code List<Genre>} contendo os gêneros selecionados pelo usuário.
+     *         Retorna uma lista vazia se não houver gêneros disponíveis no sistema,
+     *         o que deve ser tratado pelo método chamador.
+     */
     public List<Genre> addGenresMedia() {
         List<Genre> allGenres = workManager.getGenres();
         List<Genre> selectedGenres = new ArrayList<>();
@@ -88,7 +114,13 @@ public class Create {
         return selectedGenres;
     }
 
-    // Method to confirm if the user has a copy of the media or has seen it
+    /**
+     * Obtém uma confirmação booleana (Sim/Não) do usuário através de uma pergunta específica.
+     * Apresenta opções [1] Yes e [2] No e repete até receber uma entrada válida.
+     *
+     * @param prompt A pergunta a ser exibida ao usuário (ex: "Have you read the book?").
+     * @return `true` se o usuário escolher 'Sim' (opção 1), `false` se escolher 'Não' (opção 2).
+     */
     public boolean confirmationBoolean() {
         while (true) {
             System.out.println("[1] - Yes");
@@ -111,7 +143,11 @@ public class Create {
         }
     }
 
-    // Method to confirm if the user wants to add another media
+    /**
+     * Pergunta ao usuário se deseja adicionar outra mídia do mesmo tipo que acabou de cadastrar.
+     *
+     * @return `true` se o usuário responder 'Sim' (opção 1), `false` se responder 'Não' (opção 2).
+     */
     public void addAnotherMedia_Question() {
         while (true) {
             System.out.println("Would you like to add another?");
@@ -122,7 +158,7 @@ public class Create {
             String input = scanner.nextLine();
 
             if (input.equals("1")) {
-                createBook(); // You can adjust this to be dynamic later
+                createBook();
             } else if (input.equals("2")) {
                 break;
             } else {
@@ -132,6 +168,12 @@ public class Create {
     }
 
 
+    /**
+     * Gerencia o processo completo de coleta de dados do usuário para criar um novo livro.
+     * Inclui título, título original, gêneros, ano, autor, editora, ISBN, posse e status de leitura.
+     * Chama o {@link WorkManager#createBook} para registrar o livro.
+     * Permite ao usuário adicionar múltiplos livros em sequência antes de retornar ao menu anterior.
+     */
     public void createBook() {
 
         System.out.println("<----------------------------->");
@@ -176,6 +218,13 @@ public class Create {
         addAnotherMedia_Question();
     }
 
+    /**
+     * Gerencia o processo completo de coleta de dados do usuário para criar um novo filme.
+     * Inclui título, título original, gêneros, ano, duração, direção, roteiro, elenco,
+     * onde assistir e status de visualização.
+     * Chama o {@link WorkManager#createFilm} para registrar o filme.
+     * Permite ao usuário adicionar múltiplos filmes em sequência.
+     */
     public void createFilm() {
         System.out.println("<----------------------------->");
         System.out.println("Enter the movie title:");
@@ -225,7 +274,11 @@ public class Create {
         addAnotherMedia_Question();
     }
 
-
+    /**
+     * Exibe e gerencia o submenu específico para operações de séries:
+     * adicionar uma nova série ou adicionar uma nova temporada a uma série existente.
+     * O loop continua até o usuário escolher retornar ao menu de criação principal.
+     */
     public void menuShow() {
         Scanner scanner = new Scanner(System.in);
         int option_show_menu;
@@ -260,7 +313,13 @@ public class Create {
 
     }
 
-
+    /**
+     * Gerencia o processo de coleta de dados para criar uma nova série.
+     * Inclui título, título original, gêneros, elenco, ano de início e fim,
+     * onde assistir e status de visualização.
+     * Chama o {@link WorkManager#createShow} para registrar a série.
+     * Permite ao usuário adicionar múltiplas séries em sequência.
+     */
     public void createShow() {
         System.out.println("<----------------------------->");
         System.out.println("Enter the title of the series:");
@@ -301,6 +360,13 @@ public class Create {
 
     }
 
+    /**
+     * Gerencia o processo de adicionar uma nova temporada a uma série *existente*.
+     * Primeiro, o usuário seleciona a série alvo. Depois, fornece os detalhes da temporada
+     * (número, episódios, data de lançamento).
+     * Chama o {@link WorkManager#createSeason} para registrar a temporada.
+     * Permite ao usuário adicionar múltiplas temporadas (para a mesma série ou outras).
+     */
     public void createSeason() {
 
         System.out.println("<----------------------------->");
@@ -324,6 +390,15 @@ public class Create {
         workManager.getShow();
     }
 
+    /**
+     * Apresenta ao usuário a lista de séries disponíveis cadastradas no {@link WorkManager}
+     * e permite que ele selecione uma pelo número correspondente.
+     * Inclui uma opção para cancelar a seleção.
+     *
+     * @param prompt A mensagem a ser exibida ao usuário antes da lista de séries.
+     * @return O título da série selecionada como uma {@code String},
+     *         ou {@code null} se não houver séries cadastradas ou se o usuário cancelar a seleção.
+     */
     public String selectShowFromLibrary() {
         System.out.println("<----------------------------->");
         System.out.println("Enter the number of the series you want to select:");

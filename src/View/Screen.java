@@ -3,6 +3,16 @@ package View;
 import Control.WorkManager;
 import java.util.Scanner;
 
+/**
+ * Classe principal da camada View, responsável por orquestrar a interação
+ * geral com o usuário através de menus no console.
+ * Gerencia a navegação entre as funcionalidades principais: Registro de Mídias,
+ * Adição/Visualização de Reviews e Busca/Listagem de Mídias.
+ * Inicializa o {@link Control.WorkManager} e as outras classes da View
+ * (`Create`, `CreateReview`, `Search`). Contém o loop principal da aplicação.
+ *
+ * @author Davi Figuerêdo and Julia Santana
+ */
 public class Screen {
 
     WorkManager workManager = new WorkManager();
@@ -11,6 +21,13 @@ public class Screen {
     CreateReview createReview = new CreateReview(workManager);
 
 
+    /**
+     * Construtor da classe Screen.
+     * Cria a instância do {@link Control.WorkManager} (que inicializa os dados).
+     * Cria a instância compartilhada do {@link java.util.Scanner}.
+     * Cria as instâncias das outras classes da View (`Search`, `Create`, `CreateReview`),
+     * injetando o `WorkManager` e o `Scanner` nelas quando necessário.
+     */
     public void start() {
         Scanner scanner = new Scanner(System.in);
         int option_stars_menu;
@@ -52,6 +69,13 @@ public class Screen {
 
     }
 
+    /**
+     * Inicia o loop principal da interface com o usuário.
+     * Exibe o menu principal e direciona o fluxo para os submenus correspondentes
+     * (Registro, Review, Busca) com base na escolha do usuário.
+     * O loop continua até que o usuário selecione a opção de sair (4).
+     * Fecha o {@link Scanner} compartilhado ao final da execução.
+     */
     public void showRegisterMenu() {
         Scanner scanner = new Scanner(System.in);
         int option_register_menu;
@@ -85,6 +109,12 @@ public class Screen {
         while (option_register_menu != 3);
     }
 
+    /**
+     * Exibe e gerencia o submenu de registro.
+     * Permite ao usuário navegar para as funcionalidades de registrar nova mídia
+     * ou adicionar um novo gênero.
+     * O loop continua até o usuário escolher retornar ao menu principal.
+     */
     public void showAddRegister() {
         int result_create = create.menuCreat();
         if (result_create == 4) {
@@ -92,6 +122,11 @@ public class Screen {
         }
     }
 
+    /**
+     * Método auxiliar privado que lida especificamente com a adição de um novo gênero.
+     * Solicita o nome do gênero ao usuário e chama o {@link WorkManager} para adicioná-lo.
+     * Exibe a lista atualizada de gêneros como confirmação.
+     */
     public void showAddGenres() {
         Scanner scanner = new Scanner(System.in);
         int option_addGenres;
@@ -132,6 +167,12 @@ public class Screen {
 
     }
 
+    /**
+     * Exibe e gerencia o submenu de busca e listagem.
+     * Permite ao usuário navegar para as funcionalidades de busca por critérios
+     * específicos ou listagem de mídias com opções de filtro e ordenação.
+     * O loop continua até o usuário escolher retornar ao menu principal.
+     */
     public void showSearchMenu() {
         Scanner scanner = new Scanner(System.in);
         int option_search_menu;
