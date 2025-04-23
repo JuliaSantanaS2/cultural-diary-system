@@ -1,51 +1,67 @@
-/*
 package Test;
 
-import Module.Book;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import Module.AudioVisualMedia;
-import Module.Media;
+import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Collections;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import Module.AudioVisualMedia;
+import Module.Genre;
 
 class AudioVisualMediaTest {
 
-    private AudioVisualMedia audioVisualMedia;
+    private Genre genreSciFi;
+    private List<Genre> avGenres;
+    private List<String> castList;
+    private List<String> watchList;
+    private AudioVisualMedia avMedia;
+    private AudioVisualMedia avMediaNullCast;
 
     @BeforeEach
-    public void setUp() {
-        List<String> whereWatch = Arrays.asList("Netflix", "Amazon Prime");
-        audioVisualMedia = new AudioVisualMedia("Inception", 2010, 2012, 1, 10, "inception", whereWatch);
-    }
-    @Test
-    public void testGetOriginalTitle() {
-        assertEquals("Inception", audioVisualMedia.getOriginalTitle());
+    void setUp() {
+        genreSciFi = new Genre("SciFi");
+        avGenres = Collections.singletonList(genreSciFi);
+        castList = Arrays.asList("Actor 1", "Actress 2");
+        watchList = Arrays.asList("Netflix", "Prime Video");
+
+        avMedia = new AudioVisualMedia(
+                castList, true, "The Matrix", avGenres, 1999,
+                "Matrix", watchList
+        );
+        avMediaNullCast = new AudioVisualMedia(
+                null, false, "Null Cast AV", Collections.singletonList(new Genre("Drama")), 2021,
+                "Null Cast AV", Collections.singletonList("Hulu")
+        );
     }
 
     @Test
-    public void testSetOriginalTitle() {
-        audioVisualMedia.setOriginalTitle("Interstellar");
-        assertEquals("Interstellar", audioVisualMedia.getOriginalTitle());
+    @DisplayName("Constructor should set all fields correctly (final included)")
+    void constructor() {
+        assertTrue(avMedia.isSeen());
+        assertEquals("The Matrix", avMedia.getTitle());
+        assertIterableEquals(avGenres, avMedia.getGenres());
+        assertEquals(1999, avMedia.getYearRelease());
+        assertEquals("Matrix", avMedia.getOriginalTitle());
+        assertIterableEquals(watchList, avMedia.getWhereWatch());
+        assertNotNull(avMedia.getCast());
+        assertIterableEquals(castList, avMedia.getCast());
+        assertTrue(avMedia.getReviews().isEmpty());
+
+        assertNotNull(avMediaNullCast.getCast());
+        assertTrue(avMediaNullCast.getCast().isEmpty());
     }
 
     @Test
-    public void testGetWhereWatch() {
-        List<String> expectedWhereWatch = Arrays.asList("Netflix", "Amazon Prime");
-        assertEquals(expectedWhereWatch, audioVisualMedia.getWhereWatch());
+    @DisplayName("Getters for final fields should return correct AV specific values")
+    void avGetters() {
+        assertEquals("Matrix", avMedia.getOriginalTitle());
+        assertIterableEquals(watchList, avMedia.getWhereWatch());
+        assertIterableEquals(castList, avMedia.getCast());
     }
 
-    @Test
-    public void testSetWhereWatch() {
-        List<String> newWhereWatch = Arrays.asList("HBO Max", "Disney+");
-        audioVisualMedia.setWhereWatch(newWhereWatch);
-        assertEquals(newWhereWatch, audioVisualMedia.getWhereWatch());
-    }
 }
-
- */

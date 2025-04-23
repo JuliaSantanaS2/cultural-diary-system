@@ -44,34 +44,38 @@ public class CreateReview {
 
 
     public void showCreateReview() {
+        Scanner scanner = new Scanner(System.in);
+        int option;
 
+        do {
         System.out.println("<----------------------------->");
         System.out.println("Choose the type of media:");
         System.out.println("1. Book");
         System.out.println("2. Film");
         System.out.println("3. Series/Season");
-        System.out.println("4. Back");
+        System.out.println("4. Return to the previous menu");
 
-        String option = scanner.nextLine();
+        option = scanner.nextInt();
 
         switch (option) {
-            case "1":
+            case 1:
                 createReviewBookData();
                 break;
-            case "2":
+            case 2:
                 createReviewFilmsData();
                 break;
-            case "3":
+            case 3:
                 createReviewShowSerieData();
                 break;
-            case "4":
+            case 4:
                 ClearScreen.clear();
                 System.out.println("🔙 Returning to previous menu...");
-                screen.start();
                 break;
             default:
                 System.out.println("Invalid option.");
         }
+        }
+        while (option != 4);
     }
 
 

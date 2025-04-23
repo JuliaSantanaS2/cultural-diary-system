@@ -200,7 +200,7 @@ public class Search {
             System.out.println("List all media - choose criteria:");
             System.out.println("1 - Alphabetical (A–Z)");
             System.out.println("2 - Forting and Filtering");
-            System.out.println("3 - Return");
+            System.out.println("3 - Return to the previous menu");
             System.out.print("Option: ");
             option = scanner.nextInt();
             scanner.nextLine();

@@ -2,7 +2,6 @@ package Control;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import Module.Media;
 import Module.Films;
@@ -11,6 +10,17 @@ import Module.Show;
 import Module.Genre;
 import Module.Book;
 import Module.Review;
+
+/**
+ * Main controller class for the Cultural Diary application.
+ * Manages collections of Media (Books, Films, Shows), Genres, and Reviews in memory.
+ * Provides methods to create, search, list, and review cultural works.
+ * Implements the business logic layer between the View and the Model.
+ * Currently, all data is stored in memory and is volatile.
+ *
+ * @author Julia Santana de Oliveira and Davi Figuerêdo
+
+ */
 
 
 public class WorkManager {
@@ -32,8 +42,6 @@ public class WorkManager {
         this.showLibrary = new ArrayList<>();
         this.media = new ArrayList<>();
 
-        initializeGenres();
-
     }
 
     // NEW GENRE
@@ -47,155 +55,12 @@ public class WorkManager {
     }
 
 
-    // ACHO QUE POSSO EXCLUIR
+    // Look for a genre by name user
     public void getGenresTest() {
 
         for (Genre genre : genreLibrary) {
             System.out.println("- " + genre.getGenre());
         }
-    }
-
-    // EXCLUIR QUANDO VOU ENTREGAR OU DEIXAR SÓ PARA FACILITAR OS TRABALHO
-    public void initializeGenres() {
-        addGenre("Ação");
-        addGenre("Romance");
-        addGenre("Cassino");
-        addGenre("Aventura");
-        addGenre("Filosofia");
-
-        createBook(true, "Robbit", Arrays.asList(new Genre("Ação"), new Genre("Romance")), 2023, "Robbit", "Robbit", "1234567890", true);
-        createBook(false, "O Alquimista", Arrays.asList(new Genre("Ficção"), new Genre("Filosofia")), 1988, "Paulo Coelho", "HarperCollins", "9780061122415", false);
-        createBook(true, "Harry Potter e a Pedra Filosofal", Arrays.asList(new Genre("Filosofia"), new Genre("Aventura")), 1988, "J.K. Rowling", "Bloomsbury", "9780747532699", true);
-        createBook(false, "1984", Arrays.asList(new Genre("Ficção Científica"), new Genre("Filosofia")), 1988, "George Orwell", "Secker & Warburg", "9780451524935", false);
-        createBook(true, "O Senhor dos Anéis", Arrays.asList(new Genre("Fantasia"), new Genre("Aventura")), 1988, "J.R.R. Tolkien", "Allen & Unwin", "9780618640157", true);
-        createBook(true, "Dom Quixote", Arrays.asList(new Genre("Clássico"), new Genre("Comédia")), 1988, "Miguel de Cervantes", "Francisco de Robles", "9788424114078", false);
-        createBook(false, "Crime e Castigo", Arrays.asList(new Genre("Drama"), new Genre("Psicológico")), 1866, "Fiodor Dostoiévski", "The Russian Messenger", "9780143107637", true);
-        createBook(true, "O Pequeno Príncipe", Arrays.asList(new Genre("Infantil"), new Genre("Filosofia")), 1943, "Antoine de Saint-Exupéry", "Reynal & Hitchcock", "9782070612758", false);
-        createBook(false, "Cem Anos de Solidão", Arrays.asList(new Genre("Realismo Mágico"), new Genre("Ficção")), 1967, "Gabriel García Márquez", "Sudamericana", "9780241968581", true);
-        createBook(true, "Orgulho e Preconceito", Arrays.asList(new Genre("Romance"), new Genre("Drama")), 1813, "Jane Austen", "T. Egerton", "9780141439518", false);
-        createBook(false, "O Hobbit", Arrays.asList(new Genre("Fantasia"), new Genre("Aventura")), 1937, "J.R.R. Tolkien", "George Allen & Unwin", "9780345339683", true);
-        createBook(true, "Moby Dick", Arrays.asList(new Genre("Aventura"), new Genre("Clássico")), 1851, "Herman Melville", "Harper & Brothers", "9781503280786", false);
-        createBook(false, "Drácula", Arrays.asList(new Genre("Terror"), new Genre("Gótico")), 1897, "Bram Stoker", "Archibald Constable and Company", "9780486411095", true);
-        createBook(true, "O Nome do Vento", Arrays.asList(new Genre("Fantasia"), new Genre("Aventura")), 2007, "Patrick Rothfuss", "DAW Books", "9780756404741", true);
-        createBook(false, "As Crônicas de Nárnia", Arrays.asList(new Genre("Fantasia"), new Genre("Infantil")), 1950, "C.S. Lewis", "Geoffrey Bles", "9780066238503", false);
-        createBook(true, "O Código Da Vinci", Arrays.asList(new Genre("Mistério"), new Genre("Thriller")), 2003, "Dan Brown", "Doubleday", "9780385504201", true);
-        createBook(false, "Os Miseráveis", Arrays.asList(new Genre("Drama"), new Genre("Histórico")), 1862, "Victor Hugo", "A. Lacroix, Verboeckhoven & Cie.", "9780451419439", false);
-        createBook(true, "A Revolução dos Bichos", Arrays.asList(new Genre("Satírico"), new Genre("Distopia")), 1945, "George Orwell", "Secker & Warburg", "9780451526342", true);
-        createBook(false, "Sherlock Holmes: Um Estudo em Vermelho", Arrays.asList(new Genre("Mistério"), new Genre("Detetive")), 1887, "Arthur Conan Doyle", "Ward, Lock & Co.", "9781514646060", false);
-        createBook(true, "Percy Jackson e o Ladrão de Raios", Arrays.asList(new Genre("Fantasia"), new Genre("Aventura")), 2005, "Rick Riordan", "Disney-Hyperion", "9780786838653", true);
-
-        createShow(
-                Arrays.asList("Bruce Willis", "Samuel L. Jackson", "Jeremy Irons"),
-                true,
-                "TESTE TEMPORADA",
-                Arrays.asList(new Genre("Ação"), new Genre("Thriller")),
-                1995,
-                "Duro de Matar: Vingança",
-                Arrays.asList("Netflix", "Amazon Prime"),
-                128
-        );
-
-        createFilm(
-                Arrays.asList("Bruce Willis", "Samuel L. Jackson", "Jeremy Irons"),
-                true,
-                "Die Hard with a Vengeance",
-                Arrays.asList(new Genre("Ação"), new Genre("Thriller")),
-                1995,
-                "Duro de Matar: Vingança",
-                Arrays.asList("Netflix", "Amazon Prime"),
-                "John McTiernan",
-                128,
-                "Jonathan Hensleigh"
-        );
-
-        createFilm(
-                Arrays.asList("Keanu Reeves", "Laurence Fishburne", "Carrie-Anne Moss"),
-                false,
-                "The Matrix",
-                Arrays.asList(new Genre("Ficção Científica"), new Genre("Ação")),
-                1999,
-                "Matrix",
-                Arrays.asList("HBO Max", "Netflix"),
-                "The Wachowskis",
-                136,
-                "Lilly Wachowski, Lana Wachowski"
-        );
-
-        createFilm(
-                Arrays.asList("Tom Hanks", "Tim Allen", "Don Rickles"),
-                true,
-                "Toy Story",
-                Arrays.asList(new Genre("Animação"), new Genre("Família")),
-                1995,
-                "Toy Story",
-                Arrays.asList("Disney+", "Amazon Prime"),
-                "John Lasseter",
-                81,
-                "Joss Whedon, Andrew Stanton"
-        );
-
-        int result2 = createReviewFilm(
-                "Toy Story",
-                "Excelente filme de ação com muita adrenalina!",
-                5,
-                "2025/04/17"
-        );
-
-        int result3 =  createReviewFilm(
-                "The Matrix",
-                "Um clássico da ficção científica, com cenas de ação memoráveis.",
-                5,
-                "2025/04/17");
-
-        int result1 = createReviewBook(
-                "Robbit",
-                "Uma obra-prima do cinema, com uma direção incrível e uma história profunda.",
-                5,
-                "2025/04/17"
-        );
-
-        int result20 = createReviewBook(
-                "Harry Potter e a Pedra Filosofal",
-                "Filme cheio de reviravoltas, com um enredo desafiador e visual impressionante.",
-                4,
-                "2025/04/17"
-        );
-
-
-        createShow(Arrays.asList("Bruce Willis", "Samuel L. Jackson", "Jeremy Irons"), true, "Breakin Bad", Arrays.asList(new Genre("Ação"), new Genre("Aventura")),
-                1995,
-                "Duro de Matar: Vingança",
-                Arrays.asList("Netflix", "Amazon Prime"),
-                128
-        );
-
-        createSeason("Breakin Bad", 1, 10, "2025/04/17");
-        createSeason("Breakin Bad", 2, 10, "2025/04/17");
-
-        createReviewShow(
-                "Breakin Bad",
-                1,
-                "Uma obra-prima do cinema, com uma direção incrível e uma história profunda.",
-                5,
-                "2025/04/17"
-        );
-
-        createReviewShow(
-                "Breakin Bad",
-                2,
-                "Uma obra-prima do cinema, com uma direção incrível e uma história profunda.",
-                1,
-                "2025/04/17"
-        );
-
-        createReviewShow(
-                "Breakin Bad",
-                2,
-                "Uma obra-prima do cinema, com uma direção incrível e uma história profunda.",
-                3,
-                "2025/04/17"
-        );
-
     }
 
 
@@ -227,7 +92,6 @@ public class WorkManager {
         return 1;
     }
 
-    // AUXILIARY METHOD OF "createReviewBook": SELECT THE CORRESPONDING FILM IN CLASS CREATE REVIEW
     public List<String> getBooksName() {
         List<String> bookTitles = new ArrayList<>();  // Lista para armazenar os títulos
         for (Book b : bookLibrary) {

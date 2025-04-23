@@ -1,71 +1,82 @@
-/*
 package Test;
 
-import Module.Book;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Collections;
+
+import Module.Genre;
+import Module.Book;
 
 class BookTest {
-
-    private Book book;
+    private Genre genreFantasy;
+    private List<Genre> bookGenres;
+    private Book bookOwnedRead;
+    private Book bookNotOwnedNotRead;
 
     @BeforeEach
     void setUp() {
-        book = new Book("O Hobbit", 1937, "J.R.R. Tolkien", "Allen & Unwin", "123456789", true);
+        genreFantasy = new Genre("Fantasia");
+        bookGenres = Collections.singletonList(genreFantasy);
+
+        bookOwnedRead = new Book(
+                true, "The Hobbit", bookGenres, 1937,
+                "J.R.R. Tolkien", "Allen & Unwin", "978-0547928227", true
+        );
+
+        bookNotOwnedNotRead = new Book(
+                false, "Dune", Collections.singletonList(new Genre("SciFi")), 1965,
+                "Frank Herbert", "Chilton Books", "978-0441172719", false
+        );
     }
 
     @Test
-    void testGetAuthor() {
-        assertEquals("J.R.R. Tolkien", book.getAuthor());
+    @DisplayName("Constructor should set all fields correctly (final included)")
+    void constructor() {
+
+        assertTrue(bookOwnedRead.isSeen());
+        assertEquals("The Hobbit", bookOwnedRead.getTitle());
+        assertIterableEquals(bookGenres, bookOwnedRead.getGenres());
+        assertEquals(1937, bookOwnedRead.getYearRelease());
+        assertEquals("J.R.R. Tolkien", bookOwnedRead.getAuthor());
+        assertEquals("Allen & Unwin", bookOwnedRead.getPublisher());
+        assertEquals("978-0547928227", bookOwnedRead.getIsbn());
+        assertTrue(bookOwnedRead.getCopy());
+        assertTrue(bookOwnedRead.getReviews().isEmpty());
+
+
+        assertFalse(bookNotOwnedNotRead.isSeen());
+        assertEquals("Dune", bookNotOwnedNotRead.getTitle());
+        assertEquals("Frank Herbert", bookNotOwnedNotRead.getAuthor());
+        assertFalse(bookNotOwnedNotRead.getCopy());
     }
 
     @Test
-    void testSetAuthor() {
-        book.setAuthor("George R.R. Martin");
-        assertEquals("George R.R. Martin", book.getAuthor());
+    @DisplayName("Getters for final fields should return correct values")
+    void bookGetters() {
+        assertEquals("J.R.R. Tolkien", bookOwnedRead.getAuthor());
+        assertEquals("Allen & Unwin", bookOwnedRead.getPublisher());
+        assertEquals("978-0547928227", bookOwnedRead.getIsbn());
+        assertTrue(bookOwnedRead.getCopy());
     }
 
-    @Test
-    void testGetPublisher() {
-        assertEquals("Allen & Unwin", book.getPublisher());
-    }
 
     @Test
-    void testSetPublisher() {
-        book.setPublisher("HarperCollins");
-        assertEquals("HarperCollins", book.getPublisher());
-    }
-
-    @Test
-    void testGetIsbn() {
-        assertEquals("123456789", book.getIsbn());
-    }
-
-    @Test
-    void testSetIsbn() {
-        book.setIsbn("987654321");
-        assertEquals("987654321", book.getIsbn());
-    }
-
-    @Test
-    void testGetCopy() {
-        assertTrue(book.getCopy());
-    }
-
-    @Test
-    void testSetCopy() {
-        book.setCopy(false);
-        assertFalse(book.getCopy());
-    }
-
-    @Test
+    @DisplayName("toString should include Media and Book specific info")
     void testToString() {
-        String expected = ", Autor: J.R.R. Tolkien, Editora: Allen & Unwin, ISBN: 123456789, Cópia: Sim";
-        assertEquals(expected, book.toString());
+        String str = bookOwnedRead.toString();
+        assertTrue(str.contains("Título: The Hobbit"));
+        assertTrue(str.contains("Gêneros: [Fantasia]"));
+        assertTrue(str.contains("Autor: J.R.R. Tolkien"));
+        assertTrue(str.contains("Editora: Allen & Unwin"));
+        assertTrue(str.contains("ISBN: 978-0547928227"));
+        assertTrue(str.contains("Cópia: Sim"));
+
+        String str2 = bookNotOwnedNotRead.toString();
+        assertTrue(str2.contains("Cópia: Não"));
     }
 }
-*/

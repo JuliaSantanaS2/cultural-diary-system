@@ -9,6 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+
+
+
 public class Create {
     Scanner scanner = new Scanner(System.in);
     final WorkManager workManager;
@@ -27,7 +30,7 @@ public class Create {
             System.out.println("1 - Add new book");
             System.out.println("2 - Add new show");
             System.out.println("3 - Add new film");
-            System.out.println("4 - Return to the cultural diary menu");
+            System.out.println("4 - Return to the previous menu");
             System.out.println("<------------------------------->");
             option_create_menu = scanner.nextInt();
 

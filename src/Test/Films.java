@@ -1,57 +1,63 @@
-/*
 package Test;
 
-import Module.Media;
-import Module.Films;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import java.util.ArrayList;
-import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
-    class FilmsTest {
-        private Films film;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-        @BeforeEach
-        void setUp() {
-            List<String> whereWatch = new ArrayList<>();
-            whereWatch.add("Netflix");
-            film = new Films("Inception", 2010, 2010, 0, 0, whereWatch, "Christopher Nolan", 148, "Jonathan Nolan");
-        }
+import Module.Films;
+import Module.Genre;
 
-        @Test
-        void testGetDirection() {
-            assertEquals("Christopher Nolan", film.getDirection());
-        }
+class FilmsTest {
 
-        @Test
-        void testSetDirection() {
-            film.setDirection("Denis Villeneuve");
-            assertEquals("Denis Villeneuve", film.getDirection());
-        }
+    private Genre genreAction;
+    private List<Genre> filmGenres;
+    private List<String> castList;
+    private List<String> watchList;
+    private Films film;
 
-        @Test
-        void testGetRunningTime() {
-            assertEquals(148, film.getRunningtime());
-        }
+    @BeforeEach
+    void setUp() {
+        genreAction = new Genre("Action");
+        filmGenres = Collections.singletonList(genreAction);
+        castList = Arrays.asList("Keanu Reeves");
+        watchList = Collections.singletonList("HBO Max");
 
-        @Test
-        void testSetRunningTime() {
-            film.setRunningtime(160);
-            assertEquals(160, film.getRunningtime());
-        }
-
-        @Test
-        void testGetScreenplay() {
-            assertEquals("Jonathan Nolan", film.getScreenplay());
-        }
-
-        @Test
-        void testSetScreenplay() {
-            film.setScreenplay("Aaron Sorkin");
-            assertEquals("Aaron Sorkin", film.getScreenplay());
-        }
+        film = new Films(
+                castList, true, "John Wick", filmGenres, 2014,
+                "John Wick", watchList, "Chad Stahelski", 101, "Derek Kolstad"
+        );
     }
 
+    @Test
+    @DisplayName("Constructor should set all fields correctly (final included)")
+    void constructor() {
 
- */
+        assertTrue(film.isSeen());
+        assertEquals("John Wick", film.getTitle());
+        assertIterableEquals(filmGenres, film.getGenres());
+        assertEquals(2014, film.getYearRelease());
+
+        assertEquals("John Wick", film.getOriginalTitle());
+        assertIterableEquals(watchList, film.getWhereWatch());
+        assertIterableEquals(castList, film.getCast());
+
+        assertEquals("Chad Stahelski", film.getDirection());
+        assertEquals(101, film.getRunningtime());
+        assertEquals("Derek Kolstad", film.getScreenplay());
+        assertTrue(film.getReviews().isEmpty());
+    }
+
+    @Test
+    @DisplayName("Getters for final Film fields should return correct values")
+    void filmGetters() {
+        assertEquals("Chad Stahelski", film.getDirection());
+        assertEquals(101, film.getRunningtime());
+        assertEquals("Derek Kolstad", film.getScreenplay());
+    }
+
+}

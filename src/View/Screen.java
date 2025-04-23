@@ -24,8 +24,7 @@ public class Screen {
             System.out.println("1 - Register"); //showRegisterMenu
             System.out.println("2 - Review"); //createReview.showCreateReview
             System.out.println("3 - Search"); // showSearchMenu
-            System.out.println("4 - Backup (Not implemented yet)"); //start
-            System.out.println("5 - Exit"); //exit
+            System.out.println("4 - Exit"); //exit
             System.out.println("------------------------------>");
             System.out.println("Please, select an option:");
 
@@ -43,17 +42,13 @@ public class Screen {
                     showSearchMenu();
                     break;
                 case 4:
-                    start();
-                    System.out.println("Backup not implemented yet.");
-                    break;
-                case 5:
                     System.out.println("Exiting the program.");
                     break;
                 default:
                     System.out.println("Invalid option.");
             }
 
-        } while (option_stars_menu != 5);
+        } while (option_stars_menu != 4);
 
     }
 
@@ -66,7 +61,7 @@ public class Screen {
             System.out.println("Select the registration option:");
             System.out.println("1 - Register new cultural diary"); // showAddRegister
             System.out.println("2 - Genres"); // showAddGenres
-            System.out.println("3 - Return to the cultural diary menu"); //stars
+            System.out.println("3 - RReturn to the previous menu"); //stars
             System.out.println("<------------------------------->\n");
             option_register_menu = scanner.nextInt();
             ClearScreen.clear();
@@ -107,7 +102,7 @@ public class Screen {
             System.out.println("<------------------------------->");
             System.out.println("Select the option:");
             System.out.println("1 - Add new genre"); // Call Workmanager.addGenre
-            System.out.println("2 - Return to the cultural diary menu");
+            System.out.println("2 - Return to the previous menu");
             System.out.println("<------------------------------->");
             option_addGenres = scanner.nextInt();
             scanner.nextLine();
@@ -146,7 +141,7 @@ public class Screen {
             System.out.println("What would you like to do?");
             System.out.println("1 - Search for media in the journal"); // search.mediaSearchMenu
             System.out.println("2 - List all media"); // showAddGenres
-            System.out.println("3 - Return to the cultural diary menu"); //stars
+            System.out.println("3 - Return to the previous menu"); //stars
             System.out.println("<------------------------------->\n");
             option_search_menu = scanner.nextInt();
             ClearScreen.clear();
