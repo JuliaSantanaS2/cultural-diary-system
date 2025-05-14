@@ -1,7 +1,12 @@
 package Module;
 
+import java.io.Serializable; // Added
 import java.util.ArrayList;
+import java.util.Collections; // Added
+import java.util.Comparator; // Added
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Representa uma série de TV, estendendo a classe {@link AudioVisualMedia}.
@@ -11,9 +16,10 @@ import java.util.List;
  * A classe é imutável em seus atributos principais, mas a lista de temporadas pode ser
  * modificada internamente pela adição de novas temporadas.
  */
-public class Show extends AudioVisualMedia {
+public class Show extends AudioVisualMedia implements Serializable { // Added Serializable
+    private static final long serialVersionUID = 1L; // Added
 
-    private List<Season> seasons = new ArrayList<>();
+    private List<Season> seasons; // No longer final, to allow modification by addSeason
     private final int yearEnd;
 
     /**
@@ -34,8 +40,11 @@ public class Show extends AudioVisualMedia {
      */
     public Show(List<String> cast, boolean seen, String title, List<Genre> genres, int yearRelease, String originalTitle, List<String> whereWatch, int yearEnd){
         super(cast,seen,title,genres,yearRelease,originalTitle,whereWatch);
+        if (yearEnd != 0 && yearEnd < yearRelease) {
+            throw new IllegalArgumentException("Year end cannot be before year release.");
+        }
         this.yearEnd = yearEnd;
-        this.seasons = new ArrayList<>();
+        this.seasons = new ArrayList<>(); // Initialized here
     }
 
     /**
@@ -59,7 +68,17 @@ public class Show extends AudioVisualMedia {
      * @throws NullPointerException se {@code season} for nulo.
      */
     public void addSeason(Season season) {
-        seasons.add(season);
+        Objects.requireNonNull(season, "Season to add cannot be null.");
+        // Prevent adding duplicate season numbers
+        for (Season s : seasons) {
+            if (s.getSeasonNumber() == season.getSeasonNumber()) {
+                // Optionally throw an exception or just return
+                System.err.println("Warning: Season " + season.getSeasonNumber() + " already exists for show " + getTitle());
+                return;
+            }
+        }
+        this.seasons.add(season);
+        this.seasons.sort(Comparator.comparingInt(Season::getSeasonNumber)); // Keep sorted
     }
 
     /**
@@ -71,9 +90,31 @@ public class Show extends AudioVisualMedia {
      *         Pode ser vazia se nenhuma temporada foi adicionada.
      */
     public List<Season> getSeasons() {
-        return seasons;
+        // Return a defensive copy that is also unmodifiable
+        return Collections.unmodifiableList(new ArrayList<>(seasons));
     }
 
+    @Override
+    public String toString() {
+        StringBuilder seasonsStr = new StringBuilder();
+        if (seasons != null && !seasons.isEmpty()) {
+            for (Season s : seasons) {
+                seasonsStr.append("\n  - Temporada ").append(s.getSeasonNumber())
+                        .append(" (Episódios: ").append(s.getEpisodeCount())
+                        .append(", Lançamento: ").append(s.getReleaseDate()).append(")");
+                if (!s.getReviews().isEmpty()) {
+                    seasonsStr.append("\n    Reviews da Temporada:");
+                    for (Review r : s.getReviews()) {
+                        seasonsStr.append("\n      * ").append(r.toString());
+                    }
+                }
+            }
+        } else {
+            seasonsStr.append(" (Nenhuma temporada registrada)");
+        }
+
+        return super.toString() + "\n" +
+                "Ano de Encerramento: " + (yearEnd > 0 ? yearEnd : "Em andamento/N/A") + "\n" +
+                "Temporadas:" + seasonsStr.toString();
+    }
 }
-
-

@@ -1,8 +1,10 @@
 package Module;
 
+import java.io.Serializable; // Added
 import java.util.ArrayList;
+import java.util.Collections; // Added
 import java.util.List;
-
+import java.util.Objects;
 
 /**
  * Classe base para todos os tipos de mídia cultural no sistema (Livros, Filmes, Séries).
@@ -12,7 +14,8 @@ import java.util.List;
  * Instâncias desta classe base são imutáveis em seus atributos principais após a criação,
  * mas a lista de reviews pode ser modificada (adicionando reviews).
  */
-public class Media {
+public class Media implements Serializable { // Added Serializable
+    private static final long serialVersionUID = 1L; // Added
 
     private final String title;
     private final int yearRelease;
@@ -32,10 +35,16 @@ public class Media {
      * @throws IllegalArgumentException se `title` for nulo/vazio ou `genres` for nulo.
      */
     public Media(boolean seen, String title, List<Genre> genres, int yearRelease) {
-        this.title = title;
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Media title cannot be null or empty.");
+        }
+        if (genres == null) {
+            throw new IllegalArgumentException("Genres list cannot be null (can be empty).");
+        }
+        this.title = title.trim();
         this.yearRelease = yearRelease;
         this.seen = seen;
-        this.listGenres = new ArrayList<>(genres);
+        this.listGenres = new ArrayList<>(genres); // Defensive copy
         this.listReviews = new ArrayList<>();
     }
 
@@ -75,7 +84,7 @@ public class Media {
      * @return Uma lista não modificável (`UnmodifiableList`) de objetos Genre.
      */
     public List<Genre> getGenres() {
-        return listGenres;
+        return Collections.unmodifiableList(listGenres);
     }
 
 
@@ -90,10 +99,31 @@ public class Media {
      */
     @Override
     public String toString() {
+        StringBuilder genresStr = new StringBuilder("[");
+        if (listGenres != null) {
+            for (int i = 0; i < listGenres.size(); i++) {
+                genresStr.append(listGenres.get(i).getGenre());
+                if (i < listGenres.size() - 1) {
+                    genresStr.append(", ");
+                }
+            }
+        }
+        genresStr.append("]");
+
+        StringBuilder reviewsStr = new StringBuilder();
+        if (listReviews != null && !listReviews.isEmpty()) {
+            for (Review r : listReviews) {
+                reviewsStr.append("\n    - ").append(r.toString());
+            }
+        } else {
+            reviewsStr.append(" (No reviews)");
+        }
+
         return "Título: " + title + "\n" +
                 "Ano de Lançamento: " + yearRelease + "\n" +
-                "Gêneros: " + listGenres + "\n" +
-                "Review" + listReviews;
+                "Gêneros: " + genresStr.toString() + "\n" +
+                "Visto/Lido: " + (seen ? "Sim" : "Não") + "\n" +
+                "Reviews:" + (listReviews.isEmpty() ? "[]" : reviewsStr.toString());
     }
 
 
@@ -106,6 +136,7 @@ public class Media {
      * @throws NullPointerException se `review` for nulo.
      */
     public void addReview(Review review) {
+        Objects.requireNonNull(review, "Review to add cannot be null.");
         listReviews.add(review);
     }
 
@@ -116,6 +147,6 @@ public class Media {
      * @return Uma lista não modificável (`UnmodifiableList`) de objetos Review.
      */
     public List<Review> getReviews() {
-        return listReviews;
+        return Collections.unmodifiableList(listReviews);
     }
 }

@@ -1,6 +1,8 @@
 package Module;
 
+import java.io.Serializable; // Added
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Representa um livro, estendendo a classe base Media.
@@ -8,7 +10,8 @@ import java.util.List;
  * Esta classe é imutável após a criação.
  */
 
-public class Book extends Media {
+public class Book extends Media implements Serializable { // Added Serializable
+    private static final long serialVersionUID = 1L; // Added
     private final String author;
     private final String publisher;
     private final String isbn;
@@ -32,11 +35,16 @@ public class Book extends Media {
 
     public Book(boolean seen, String title, List<Genre> genres, int yearRelease, String author, String publisher, String isbn, boolean copy) {
         super(seen, title, genres, yearRelease);
-        this.author = author;
-        this.publisher = publisher;
-        this.isbn = isbn;
+        if (author == null || author.trim().isEmpty()) {
+            throw new IllegalArgumentException("Author cannot be null or empty.");
+        }
+        if (isbn == null || isbn.trim().isEmpty()) {
+            throw new IllegalArgumentException("ISBN cannot be null or empty.");
+        }
+        this.author = author.trim();
+        this.publisher = (publisher != null) ? publisher.trim() : ""; // Allow empty publisher
+        this.isbn = isbn.trim();
         this.copy = copy;
-
     }
 
     /**
@@ -90,9 +98,8 @@ public class Book extends Media {
     public String toString() {
         return super.toString() + "\n" +
                 "Autor: " + author + "\n" +
-                "Editora: " + publisher + "\n" +
+                "Editora: " + (!publisher.isEmpty() ? publisher : "N/A") + "\n" +
                 "ISBN: " + isbn + "\n" +
                 "Cópia: " + (copy ? "Sim" : "Não");
-
     }
 }
