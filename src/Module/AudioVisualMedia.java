@@ -1,7 +1,10 @@
 package Module;
 
+import java.io.Serializable; // Added
 import java.util.ArrayList;
+import java.util.Collections; // Added
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Representa uma mídia audiovisual, estendendo a classe base Media.
@@ -10,7 +13,8 @@ import java.util.List;
  * Esta classe é imutável após a criação.
  */
 
-public class AudioVisualMedia extends Media {
+public class AudioVisualMedia extends Media implements Serializable { // Added Serializable
+    private static final long serialVersionUID = 1L; // Added
 
     private final String originalTitle;
     private final List<String> whereWatch;
@@ -32,15 +36,19 @@ public class AudioVisualMedia extends Media {
 
     public AudioVisualMedia(List<String> cast, boolean seen, String title, List<Genre> genres, int yearRelease, String originalTitle, List<String> whereWatch) {
         super( seen, title, genres, yearRelease);
-        this.originalTitle = originalTitle;
-        this.whereWatch = whereWatch;
+        this.originalTitle = (originalTitle != null && !originalTitle.trim().isEmpty()) ? originalTitle.trim() : title; // Ensure originalTitle is not empty if provided
+
+        if (whereWatch != null) {
+            this.whereWatch = new ArrayList<>(whereWatch.stream().map(String::trim).collect(Collectors.toList())); // Defensive copy
+        } else {
+            this.whereWatch = new ArrayList<>();
+        }
 
         if (cast != null) {
-            this.cast = new ArrayList<>(cast);
+            this.cast = new ArrayList<>(cast.stream().map(String::trim).collect(Collectors.toList())); // Defensive copy
         } else {
             this.cast = new ArrayList<>();
         }
-
     }
 
     /**
@@ -60,7 +68,7 @@ public class AudioVisualMedia extends Media {
      */
 
     public List<String> getWhereWatch() {
-        return whereWatch;
+        return Collections.unmodifiableList(whereWatch);
     }
 
     /**
@@ -69,7 +77,9 @@ public class AudioVisualMedia extends Media {
      * @return Uma lista não modificável de strings representando o elenco.
      */
 
-    public List<String> getCast() {return cast;}
+    public List<String> getCast() {
+        return Collections.unmodifiableList(cast);
+    }
 
     /**
      * Retorna uma representação em string da mídia audiovisual.
@@ -77,5 +87,11 @@ public class AudioVisualMedia extends Media {
      *
      * @return Uma string formatada com os detalhes da mídia audiovisual.
      */
+    @Override
+    public String toString() {
+        return super.toString() + "\n" +
+                "Título Original: " + (originalTitle != null ? originalTitle : "N/A") + "\n" +
+                "Elenco: " + (cast != null && !cast.isEmpty() ? String.join(", ", cast) : "N/A") + "\n" +
+                "Onde Assistir: " + (whereWatch != null && !whereWatch.isEmpty() ? String.join(", ", whereWatch) : "N/A");
+    }
 }
-

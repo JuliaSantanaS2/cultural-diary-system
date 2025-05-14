@@ -1,5 +1,6 @@
 package Control;
 
+import java.io.*; // Added for File I/O
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,41 +29,113 @@ import Module.*;
  */
 public class WorkManager {
 
+    private static final String DATA_FILE = "cultural_diary.dat"; // Added for persistence
+
     /** Lista para armazenar todos os objetos {@link Genre} cadastrados. Mantida ordenada alfabeticamente. */
-    private final List<Genre> genreLibrary;
+    private List<Genre> genreLibrary; // Removed final
     /** Lista geral que armazena todos os objetos {@link Review} criados (de livros, filmes e temporadas de séries). */
-    private final List<Review> reviewLibrary;
+    private final List<Review> reviewLibrary; // Kept for now, but its direct persistence is less critical if reviews are well-nested.
     /** Lista para armazenar especificamente os objetos {@link Book} cadastrados. */
-    private final List<Book> bookLibrary;
+    private List<Book> bookLibrary; // Removed final
     /** Lista para armazenar especificamente os objetos {@link Films} cadastrados. */
-    private final List<Films> filmLibrary;
+    private List<Films> filmLibrary; // Removed final
     /** Lista para armazenar especificamente os objetos {@link Show} cadastrados. */
-    private final List<Show> showLibrary;
+    private List<Show> showLibrary; // Removed final
     /** Lista agregada contendo referências a todos os objetos {@link Media} (Book, Films, Show)
      * para facilitar buscas e listagens gerais que abrangem todos os tipos de mídia. */
-    private final List<Media> media;
-
-
+    private final List<Media> media; // This will be repopulated after loading
 
 
     /**
      * Construtor padrão do WorkManager.
      * Inicializa todas as listas de dados (`genreLibrary`, `reviewLibrary`, `bookLibrary`,
      * `filmLibrary`, `showLibrary`, `media`) como {@link ArrayList}s vazias.
+     * Tries to load data from file, otherwise initializes with example data.
      */
     public WorkManager() {
-
+        // Initialize lists first
         this.genreLibrary = new ArrayList<>();
-        this.reviewLibrary = new ArrayList<>();
+        this.reviewLibrary = new ArrayList<>(); // Consider if this is truly needed for persistence or can be reconstructed
         this.bookLibrary = new ArrayList<>();
         this.filmLibrary = new ArrayList<>();
         this.showLibrary = new ArrayList<>();
         this.media = new ArrayList<>();
 
-        initializeExampleData();
-
+        if (!loadData()) { // Try to load data
+            System.out.println("No existing data file found or error loading. Initializing with example data.");
+            initializeExampleData(); // If loading fails or no file, use example data
+            saveData(); // Save the initial example data
+        } else {
+            System.out.println("Data loaded successfully from " + DATA_FILE);
+            // Repopulate the aggregated media list after loading
+            repopulateMediaList();
+            // Optionally, repopulate reviewLibrary if it's not persisted but needed
+            repopulateReviewLibrary();
+        }
     }
 
+    private void repopulateMediaList() {
+        this.media.clear();
+        if (this.bookLibrary != null) this.media.addAll(this.bookLibrary);
+        if (this.filmLibrary != null) this.media.addAll(this.filmLibrary);
+        if (this.showLibrary != null) this.media.addAll(this.showLibrary);
+    }
+
+    private void repopulateReviewLibrary() {
+        this.reviewLibrary.clear();
+        for (Media m : this.media) {
+            if (m instanceof Book || m instanceof Films) {
+                this.reviewLibrary.addAll(m.getReviews());
+            } else if (m instanceof Show) {
+                Show s = (Show) m;
+                for (Season season : s.getSeasons()) {
+                    this.reviewLibrary.addAll(season.getReviews());
+                }
+            }
+        }
+    }
+
+    // --- Persistence Methods ---
+    @SuppressWarnings("unchecked")
+    private boolean loadData() {
+        File file = new File(DATA_FILE);
+        if (!file.exists()) {
+            return false;
+        }
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(DATA_FILE))) {
+            this.genreLibrary = (List<Genre>) ois.readObject();
+            this.bookLibrary = (List<Book>) ois.readObject();
+            this.filmLibrary = (List<Films>) ois.readObject();
+            this.showLibrary = (List<Show>) ois.readObject();
+            // Note: reviewLibrary and media list will be repopulated
+            System.out.println("Data loaded from " + DATA_FILE);
+            return true;
+        } catch (FileNotFoundException e) {
+            System.err.println("Data file not found (should have been caught by exists()): " + e.getMessage());
+            return false; // File does not exist
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error loading data: " + e.getMessage());
+            e.printStackTrace(); // For debugging
+            // Consider deleting the corrupt file here or backing it up
+            // file.delete(); // Or rename to .bak
+            return false; // Error during loading
+        }
+    }
+
+    private void saveData() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(DATA_FILE))) {
+            oos.writeObject(genreLibrary);
+            oos.writeObject(bookLibrary);
+            oos.writeObject(filmLibrary);
+            oos.writeObject(showLibrary);
+            // Note: reviewLibrary is not directly saved; it's derived or part of other objects.
+            // The `media` list is also derived.
+            System.out.println("Data saved to " + DATA_FILE);
+        } catch (IOException e) {
+            System.err.println("Error saving data: " + e.getMessage());
+            e.printStackTrace(); // For debugging
+        }
+    }
 
 
     private void initializeExampleData() {
@@ -82,120 +155,26 @@ public class WorkManager {
         addGenre("Biografia");
         addGenre("Crime");
 
-        class GenreFinder {
+        class GenreFinder { // Helper class, consider moving or making static if used elsewhere
             static Genre find(String name, List<Genre> library) {
                 for (Genre g : library) {
                     if (g.getGenre().equalsIgnoreCase(name)) {
                         return g;
                     }
                 }
-                System.out.println("AVISO: Gênero '" + name + "' não encontrado durante inicialização!");
-                return null;
+                System.out.println("AVISO: Gênero '" + name + "' não encontrado durante inicialização! Criando...");
+                // If not found, create it, add it, and return it for robustness in example data
+                Genre newGenre = new Genre(name);
+                // This direct add bypasses the WorkManager's addGenre logic (sorting, saving)
+                // which might be an issue. For examples, it's okay, but better to use the public method.
+                // However, addGenre itself calls saveData, which is problematic during initialization.
+                // For now, this direct add is simpler for the example.
+                // A better way would be to collect all example genres and add them once.
+                // library.add(newGenre); Collections.sort(library);
+                // Or ensure `addGenre` doesn't save during `initializeExampleData`
+                return newGenre; // Temporary: return a new one, won't be added to the main library here
             }
         }
-
-        // --- 3. Criação de Livros ---
-        // Livro 1
-        List<Genre> generosLivro1 = new ArrayList<>();
-        Genre g1_1 = GenreFinder.find("Ficção Científica", genreLibrary); if (g1_1 != null) generosLivro1.add(g1_1);
-        Genre g1_2 = GenreFinder.find("Aventura", genreLibrary);         if (g1_2 != null) generosLivro1.add(g1_2);
-        Genre g1_3 = GenreFinder.find("Drama", genreLibrary);            if (g1_3 != null) generosLivro1.add(g1_3);
-        createBook(true, "Duna", generosLivro1, 1965, "Frank Herbert", "Chilton Books", "978-0441172719", true);
-
-        // Livro 2
-        List<Genre> generosLivro2 = new ArrayList<>();
-        Genre g2_1 = GenreFinder.find("Drama", genreLibrary);     if (g2_1 != null) generosLivro2.add(g2_1);
-        Genre g2_2 = GenreFinder.find("Aventura", genreLibrary);  if (g2_2 != null) generosLivro2.add(g2_2);
-        createBook(false, "O Conde de Monte Cristo", generosLivro2, 1844, "Alexandre Dumas", "Penguin Classics", "978-0140449266", true);
-
-        // Livro 3
-        List<Genre> generosLivro3 = new ArrayList<>();
-        Genre g3_1 = GenreFinder.find("Fantasia", genreLibrary);  if (g3_1 != null) generosLivro3.add(g3_1);
-        Genre g3_2 = GenreFinder.find("Aventura", genreLibrary);  if (g3_2 != null) generosLivro3.add(g3_2);
-        createBook(true, "O Hobbit", generosLivro3, 1937, "J.R.R. Tolkien", "HarperCollins", "978-0547928227", false);
-
-        // Livro 4
-        List<Genre> generosLivro4 = new ArrayList<>();
-        Genre g4_1 = GenreFinder.find("Suspense", genreLibrary);  if (g4_1 != null) generosLivro4.add(g4_1);
-        Genre g4_2 = GenreFinder.find("Mistério", genreLibrary);  if (g4_2 != null) generosLivro4.add(g4_2);
-        Genre g4_3 = GenreFinder.find("Drama", genreLibrary);     if (g4_3 != null) generosLivro4.add(g4_3);
-        createBook(true, "Garota Exemplar", generosLivro4, 2012, "Gillian Flynn", "Intrínseca", "978-8580573514", true);
-
-        // Livro 5
-        List<Genre> generosLivro5 = new ArrayList<>();
-        Genre g5_1 = GenreFinder.find("Ficção Científica", genreLibrary); if (g5_1 != null) generosLivro5.add(g5_1);
-        Genre g5_2 = GenreFinder.find("Drama", genreLibrary);             if (g5_2 != null) generosLivro5.add(g5_2);
-        Genre g5_3 = GenreFinder.find("Aventura", genreLibrary);          if (g5_3 != null) generosLivro5.add(g5_3);
-        createBook(true, "Messias de Duna", generosLivro5, 1969, "Frank Herbert", "Ace Books", "978-0441523967", false);
-
-
-        // --- 4. Criação de Filmes ---
-        // Filme 1
-        List<Genre> generosFilme1 = new ArrayList<>();
-        Genre gf1_1 = GenreFinder.find("Ficção Científica", genreLibrary); if (gf1_1 != null) generosFilme1.add(gf1_1);
-        Genre gf1_2 = GenreFinder.find("Drama", genreLibrary);            if (gf1_2 != null) generosFilme1.add(gf1_2);
-        Genre gf1_3 = GenreFinder.find("Aventura", genreLibrary);         if (gf1_3 != null) generosFilme1.add(gf1_3);
-        createFilm(List.of("Matthew McConaughey", "Anne Hathaway", "Jessica Chastain"), true, "Interestelar", generosFilme1, 2014, "Interstellar", List.of("HBO Max", "Prime Video"), "Christopher Nolan", 169, "Jonathan Nolan, Christopher Nolan");
-
-        // Filme 2
-        List<Genre> generosFilme2 = new ArrayList<>();
-        Genre gf2_1 = GenreFinder.find("Ação", genreLibrary);             if (gf2_1 != null) generosFilme2.add(gf2_1);
-        Genre gf2_2 = GenreFinder.find("Ficção Científica", genreLibrary); if (gf2_2 != null) generosFilme2.add(gf2_2);
-        Genre gf2_3 = GenreFinder.find("Aventura", genreLibrary);         if (gf2_3 != null) generosFilme2.add(gf2_3);
-        createFilm(List.of("Tom Hardy", "Charlize Theron", "Nicholas Hoult"), true, "Mad Max: Estrada da Fúria", generosFilme2, 2015, "Mad Max: Fury Road", List.of("HBO Max"), "George Miller", 120, "George Miller, Brendan McCarthy, Nico Lathouris");
-
-        // Filme 3
-        List<Genre> generosFilme3 = new ArrayList<>();
-        Genre gf3_1 = GenreFinder.find("Drama", genreLibrary); if (gf3_1 != null) generosFilme3.add(gf3_1);
-        createFilm(List.of("Miles Teller", "J.K. Simmons"), true, "Whiplash: Em Busca da Perfeição", generosFilme3, 2014, "Whiplash", List.of("Netflix", "Star+"), "Damien Chazelle", 106, "Damien Chazelle");
-
-        // Filme 4
-        List<Genre> generosFilme4 = new ArrayList<>();
-        Genre gf4_1 = GenreFinder.find("Ação", genreLibrary);             if (gf4_1 != null) generosFilme4.add(gf4_1);
-        Genre gf4_2 = GenreFinder.find("Ficção Científica", genreLibrary); if (gf4_2 != null) generosFilme4.add(gf4_2);
-        Genre gf4_3 = GenreFinder.find("Suspense", genreLibrary);         if (gf4_3 != null) generosFilme4.add(gf4_3);
-        createFilm(List.of("Leonardo DiCaprio", "Joseph Gordon-Levitt", "Elliot Page", "Tom Hardy"), false, "A Origem", generosFilme4, 2010, "Inception", List.of("HBO Max", "Netflix"), "Christopher Nolan", 148, "Christopher Nolan");
-
-        // Filme 5
-        List<Genre> generosFilme5 = new ArrayList<>();
-        Genre gf5_1 = GenreFinder.find("Biografia", genreLibrary); if (gf5_1 != null) generosFilme5.add(gf5_1);
-        Genre gf5_2 = GenreFinder.find("Drama", genreLibrary);     if (gf5_2 != null) generosFilme5.add(gf5_2);
-        Genre gf5_3 = GenreFinder.find("Histórico", genreLibrary); if (gf5_3 != null) generosFilme5.add(gf5_3);
-        createFilm(List.of("Benedict Cumberbatch", "Keira Knightley", "Matthew Goode"), true, "O Jogo da Imitação", generosFilme5, 2014, "The Imitation Game", List.of("Netflix", "Prime Video"), "Morten Tyldum", 114, "Graham Moore");
-
-
-        // --- 5. Criação de Séries e Temporadas ---
-        // Série 1
-        List<Genre> generosSerie1 = new ArrayList<>();
-        Genre gs1_1 = GenreFinder.find("Comédia", genreLibrary); if (gs1_1 != null) generosSerie1.add(gs1_1);
-        Genre gs1_2 = GenreFinder.find("Drama", genreLibrary);   if (gs1_2 != null) generosSerie1.add(gs1_2);
-        createShow(List.of("Phoebe Waller-Bridge", "Sian Clifford", "Olivia Colman"), true, "Fleabag", generosSerie1, 2016, "Fleabag", List.of("Prime Video"), 2019);
-        int s1t1 = createSeason("Fleabag", 1, 6, "21/07/2016");
-        int s1t2 = createSeason("Fleabag", 2, 6, "04/03/2019");
-
-        // Série 2
-        List<Genre> generosSerie2 = new ArrayList<>();
-        Genre gs2_1 = GenreFinder.find("Ficção Científica", genreLibrary); if (gs2_1 != null) generosSerie2.add(gs2_1);
-        Genre gs2_2 = GenreFinder.find("Suspense", genreLibrary);         if (gs2_2 != null) generosSerie2.add(gs2_2);
-        Genre gs2_3 = GenreFinder.find("Drama", genreLibrary);            if (gs2_3 != null) generosSerie2.add(gs2_3);
-        Genre gs2_4 = GenreFinder.find("Mistério", genreLibrary);         if (gs2_4 != null) generosSerie2.add(gs2_4);
-        createShow(List.of("Louis Hofmann", "Lisa Vicari", "Andreas Pietschmann"), true, "Dark", generosSerie2, 2017, "Dark", List.of("Netflix"), 2020);
-        int s2t1 = createSeason("Dark", 1, 10, "01/12/2017");
-        int s2t2 = createSeason("Dark", 2, 8, "21/06/2019");
-        int s2t3 = createSeason("Dark", 3, 8, "27/06/2020");
-
-
-        // --- 6. Criação de Reviews (Metade das obras, +/-) ---
-        createReviewBook("Duna", "Clássico absoluto, leitura densa mas recompensadora.", 5, "10/01/2024");
-        createReviewBook("Garota Exemplar", "Plot twist genial, me deixou de queixo caído.", 4, "15/02/2024");
-        createReviewFilm("Interestelar", "Emocionante e visualmente espetacular. Nolan no seu melhor.", 5, "20/01/2024");
-        createReviewFilm("Whiplash: Em Busca da Perfeição", "Atuações intensas, especialmente J.K. Simmons.", 5, "05/02/2024");
-        createReviewFilm("O Jogo da Imitação", "História importante e performance incrível de Cumberbatch.", 4, "25/02/2024");
-        if (s1t1 == 0) createReviewShow("Fleabag", 1, "Humor ácido e inteligente. Amei!", 5, "11/03/2024");
-        if (s2t1 == 0) createReviewShow("Dark", 1, "Confuso no começo, mas muito intrigante.", 4, "15/03/2024");
-        if (s2t3 == 0) createReviewShow("Dark", 3, "Finalizou bem a complexidade, apesar de algumas pontas.", 4, "20/03/2024");
-
-        System.out.println("--- Dados de Exemplo Carregados ---");
     }
 
     /**
@@ -209,8 +188,21 @@ public class WorkManager {
      *                  apenas de espaços, a operação é ignorada com uma mensagem de aviso.
      */
     public void addGenre(String genreName){
-        genreLibrary.add(new Genre(genreName));
-        Collections.sort(genreLibrary);
+        if (genreName == null || genreName.trim().isEmpty()) {
+            System.out.println("Nome do gênero inválido.");
+            return;
+        }
+        Genre newGenre = new Genre(genreName.trim());
+        // Check for duplicates ignoring case
+        boolean exists = genreLibrary.stream().anyMatch(g -> g.getGenre().equalsIgnoreCase(newGenre.getGenre()));
+        if (!exists) {
+            genreLibrary.add(newGenre);
+            Collections.sort(genreLibrary);
+            System.out.println("Gênero '" + newGenre.getGenre() + "' adicionado.");
+            saveData(); // Save after adding
+        } else {
+            System.out.println("Gênero '" + newGenre.getGenre() + "' já existe.");
+        }
     }
 
     /**
@@ -221,7 +213,7 @@ public class WorkManager {
      *         ordenada alfabeticamente.
      */
     public List<Genre> getGenres() {
-        return genreLibrary;
+        return Collections.unmodifiableList(genreLibrary);
     }
 
 
@@ -231,7 +223,10 @@ public class WorkManager {
      * pela camada de Visualização (View), pois imprime diretamente no `System.out`.
      */
     public void getGenresTest() {
-
+        if (genreLibrary.isEmpty()) {
+            System.out.println("Nenhum gênero cadastrado.");
+            return;
+        }
         for (Genre genre : genreLibrary) {
             System.out.println("- " + genre.getGenre());
         }
@@ -255,9 +250,14 @@ public class WorkManager {
      * @param copy        Indica se o usuário possui uma cópia física.
      */
     public void createBook(boolean seen, String title,List<Genre> genres, int yearRelease, String author, String publisher, String isbn, boolean copy){
-        Book book = new Book (seen, title, genres, yearRelease, author, publisher, isbn, copy);
-        bookLibrary.add(book);
-        media.add(book);
+        try {
+            Book book = new Book (seen, title, genres, yearRelease, author, publisher, isbn, copy);
+            bookLibrary.add(book);
+            media.add(book); // Also add to aggregated list
+            saveData(); // Save after creation
+        } catch (IllegalArgumentException e) {
+            System.err.println("Erro ao criar livro: " + e.getMessage());
+        }
     }
 
     /**
@@ -283,18 +283,22 @@ public class WorkManager {
         for (Book book : bookLibrary) {
             if (book.getTitle().equalsIgnoreCase(title)) {
                 if (book.isSeen()) {
-                    Review newReview = new Review(comment, stars, reviewDate);
-
-                    book.addReview(newReview);
-                    reviewLibrary.add(newReview);
-
-                    return 0;
+                    try {
+                        Review newReview = new Review(comment, stars, reviewDate);
+                        book.addReview(newReview); // addReview is now public in Media
+                        reviewLibrary.add(newReview); // Keep this for now
+                        saveData(); // Save after adding review
+                        return 0;
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Erro ao criar review: " + e.getMessage());
+                        return 99; // Invalid review data
+                    }
                 } else {
-                    return 2;
+                    return 2; // Not seen
                 }
             }
         }
-        return 1;
+        return 1; // Book not found
     }
 
     /**
@@ -306,11 +310,10 @@ public class WorkManager {
      *         Retorna uma lista vazia se não houver livros cadastrados.
      */
     public List<String> getBooksName() {
-        List<String> bookTitles = new ArrayList<>();
-        for (Book b : bookLibrary) {
-            bookTitles.add(b.getTitle());
-        }
-        return bookTitles;
+        return bookLibrary.stream()
+                .map(Book::getTitle)
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .collect(Collectors.toList());
     }
 
 
@@ -333,9 +336,14 @@ public class WorkManager {
      * @param screenplay    O(s) roteirista(s) (pode ser nulo/vazio).
      */
     public void createFilm(List<String> cast, boolean seen, String title, List<Genre> genres, int yearRelease, String originalTitle, List<String> whereWatch, String direction, int runningtime, String screenplay){
-        Films film = new Films (cast, seen, title, genres, yearRelease, originalTitle, whereWatch, direction, runningtime, screenplay);
-        filmLibrary.add(film);
-        media.add(film);
+        try {
+            Films film = new Films (cast, seen, title, genres, yearRelease, originalTitle, whereWatch, direction, runningtime, screenplay);
+            filmLibrary.add(film);
+            media.add(film);
+            saveData(); // Save after creation
+        } catch (IllegalArgumentException e) {
+            System.err.println("Erro ao criar filme: " + e.getMessage());
+        }
     }
 
     /**
@@ -358,20 +366,24 @@ public class WorkManager {
      */
     public int createReviewFilm(String title, String comment, int stars, String reviewDate) {
         for (Films film : filmLibrary) {
-           if (film.getTitle() != null && film.getTitle().equalsIgnoreCase(title)) {
+            if (film.getTitle() != null && film.getTitle().equalsIgnoreCase(title)) {
                 if (film.isSeen()) {
-                    Review newReview = new Review(comment, stars, reviewDate);
-
-                    film.addReview(newReview);
-                    reviewLibrary.add(newReview);
-
-                    return 0;
+                    try {
+                        Review newReview = new Review(comment, stars, reviewDate);
+                        film.addReview(newReview);
+                        reviewLibrary.add(newReview);
+                        saveData(); // Save after adding review
+                        return 0;
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Erro ao criar review: " + e.getMessage());
+                        return 99; // Invalid review data
+                    }
                 } else {
-                    return 2;
+                    return 2; // Not seen
                 }
             }
         }
-        return 1;
+        return 1; // Film not found
     }
 
     // AUXILIARY METHOD OF "createReviewFilm": SELECT THE CORRESPONDING FILM IN CLASS CREATE REVIEW
@@ -384,11 +396,10 @@ public class WorkManager {
      *         Retorna lista vazia se não houver filmes.
      */
     public List<String> getFilmName() {
-        List<String> filmTitles = new ArrayList<>();
-        for (Films f : filmLibrary) {
-            filmTitles.add(f.getTitle());
-        }
-        return filmTitles;
+        return filmLibrary.stream()
+                .map(Films::getTitle)
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .collect(Collectors.toList());
     }
 
     // METHODS RELATED TO SHOW/SEASON =============================================================================================================================
@@ -408,11 +419,15 @@ public class WorkManager {
      * @param yearEnd       O ano de encerramento (0 se não aplicável, deve ser >= yearRelease se > 0).
      */
     public void createShow(List<String> cast, boolean seen, String title, List<Genre> genres, int yearRelease, String originalTitle, List<String> whereWatch, int yearEnd){
-        Show show = new Show (cast, seen, title, genres, yearRelease, originalTitle, whereWatch, yearEnd);
-        showLibrary.add(show);
-        media.add(show);
+        try {
+            Show show = new Show (cast, seen, title, genres, yearRelease, originalTitle, whereWatch, yearEnd);
+            showLibrary.add(show);
+            media.add(show);
+            saveData(); // Save after creation
+        } catch (IllegalArgumentException e) {
+            System.err.println("Erro ao criar série: " + e.getMessage());
+        }
     }
-
 
 
     /**
@@ -429,6 +444,7 @@ public class WorkManager {
      *         <ul>
      *           <li>0: Sucesso - Temporada criada e adicionada à série.</li>
      *           <li>1: Erro - Série com o título especificado não encontrada.</li>
+     *           <li>2: Erro - Série não marcada como vista (se relevante para adicionar temporada).</li>
      *           <li>4: Erro - Uma temporada com este número já existe para esta série.</li>
      *           <li>98: Erro - Dados fornecidos para a temporada (número, episódios, data) são inválidos.</li>
      *         </ul>
@@ -436,16 +452,28 @@ public class WorkManager {
     public int createSeason(String title, int seasonNumber, int episodeCount, String releaseDate) {
         for (Show show : showLibrary) {
             if (show.getTitle() != null && show.getTitle().equalsIgnoreCase(title)) {
-                if (show.isSeen()) {
+                // if (show.isSeen()) { // This check might not be relevant for adding a season
+                // Check if season already exists
+                boolean seasonExists = show.getSeasons().stream()
+                        .anyMatch(s -> s.getSeasonNumber() == seasonNumber);
+                if (seasonExists) {
+                    return 4; // Season already exists
+                }
+                try {
                     Season newSeason = new Season(seasonNumber, episodeCount, releaseDate);
                     show.addSeason(newSeason);
-                    return 0;
-                } else {
-                    return 2;
+                    saveData(); // Save after adding season
+                    return 0; // Success
+                } catch (IllegalArgumentException e) {
+                    System.err.println("Erro ao criar temporada: " + e.getMessage());
+                    return 98; // Invalid season data
                 }
+                // } else {
+                //     return 2; // Show not marked as seen (if this is a requirement)
+                // }
             }
         }
-        return 1;
+        return 1; // Show not found
     }
 
     // AUXILIARY METHOD OF "createSeason": SELECT THE CORRESPONDING SHOW IN CLASS CREATE
@@ -458,11 +486,10 @@ public class WorkManager {
      *         Retorna lista vazia se não houver séries.
      */
     public List<String> getShowName() {
-        List<String> showTitles = new ArrayList<>();
-        for (Show s : showLibrary) {
-            showTitles.add(s.getTitle());
-        }
-        return showTitles;
+        return showLibrary.stream()
+                .map(Show::getTitle)
+                .sorted(String.CASE_INSENSITIVE_ORDER)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -482,23 +509,34 @@ public class WorkManager {
      *           <li>1: Erro - Série com o título especificado não encontrada.</li>
      *           <li>3: Erro - Temporada com o número especificado não encontrada para esta série.</li>
      *           <li>99: Erro - Dados fornecidos para a review são inválidos.</li>
-     *           <li>97: Erro - Erro interno ao tentar localizar o objeto Season original para adicionar a review.</li>
      *         </ul>
      */
     public int createReviewShow(String showTitle, int seasonNumber, String comment, int stars, String reviewDate) {
         for (Show show : showLibrary) {
             if (show.getTitle().equalsIgnoreCase(showTitle)) {
-                for (Season season : show.getSeasons()) {
+                // Find the specific season object to add the review to
+                Season targetSeason = null;
+                for (Season season : show.getSeasons()) { // Iterate over the modifiable list from show
                     if (season.getSeasonNumber() == seasonNumber) {
-
-                        Review newReview = new Review(comment, stars, reviewDate);
-                        season.addReview(newReview);
-                        reviewLibrary.add(newReview);
-                        return 0; // Review create with sucess
-
+                        targetSeason = season;
+                        break;
                     }
                 }
-                return 3; // Season not found
+
+                if (targetSeason != null) {
+                    try {
+                        Review newReview = new Review(comment, stars, reviewDate);
+                        targetSeason.addReview(newReview); // Add review to the actual season object
+                        reviewLibrary.add(newReview); // Keep this for now
+                        saveData(); // Save after adding review
+                        return 0; // Review created successfully
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("Erro ao criar review: " + e.getMessage());
+                        return 99; // Invalid review data
+                    }
+                } else {
+                    return 3; // Season not found
+                }
             }
         }
         return 1; // Show not found
@@ -515,16 +553,14 @@ public class WorkManager {
      *         Retorna uma lista vazia se a série não for encontrada ou não tiver temporadas.
      */
     public List<Integer> getSeasonsByShowName(String showTitle) {
-        for (Show show : showLibrary) {
-            if (show.getTitle().equalsIgnoreCase(showTitle)) {
-                List<Integer> seasonNumbers = new ArrayList<>();
-                for (Season season : show.getSeasons()) {
-                    seasonNumbers.add(season.getSeasonNumber());
-                }
-                return seasonNumbers;
-            }
-        }
-        return Collections.emptyList();
+        return showLibrary.stream()
+                .filter(show -> show.getTitle().equalsIgnoreCase(showTitle))
+                .findFirst()
+                .map(show -> show.getSeasons().stream()
+                        .map(Season::getSeasonNumber)
+                        .sorted()
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
     }
 
     /**
@@ -532,18 +568,15 @@ public class WorkManager {
      * na `showLibrary`, incluindo detalhes de cada uma de suas temporadas e as
      * {@link Review}s associadas a cada temporada.
      */
-    public void getShow() {
+    public void getShow() { // For debugging/testing primarily
+        if (showLibrary.isEmpty()) {
+            System.out.println("Nenhuma série cadastrada.");
+            return;
+        }
         for (Show show : showLibrary) {
-            System.out.println(show.toString());
-            for (Season season : show.getSeasons()) {
-                System.out.println("  Temporada " + season.getSeasonNumber() + ":");
-                for (Review review : season.getReviews()) {
-                    System.out.println("    - " + review.toString());
-                }
-            }
+            System.out.println(show.toString()); // Show's toString should handle season and review details
         }
     }
-
 
 
     // METHODS RELATED TO SEARCH =============================================================================================================================
@@ -557,8 +590,12 @@ public class WorkManager {
      *         Retorna uma lista vazia se nenhum item for encontrado ou se `title` for inválido.
      */
     public List<Media> searchByTitle(String title) {
+        if (title == null || title.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        String searchTerm = title.trim().toLowerCase();
         return media.stream()
-                .filter(m -> m.getTitle().toLowerCase().contains(title.toLowerCase()))
+                .filter(m -> m.getTitle().toLowerCase().contains(searchTerm))
                 .collect(Collectors.toList());
     }
 
@@ -590,17 +627,18 @@ public class WorkManager {
     public List<Media> searchByGenre(String genreName) {
         if (genreName == null || genreName.trim().isEmpty()) {
             return Collections.emptyList();
-        } String searchNameLower = genreName.trim().toLowerCase();
+        }
+        String searchNameLower = genreName.trim().toLowerCase();
 
         return this.media.stream()
                 .filter(m -> {
-                    List<Genre> genresDaMedia = m.getGenres();
-                    if (genresDaMedia == null || genresDaMedia.isEmpty()) {
+                    List<Genre> genresDaMedia = m.getGenres(); // This is already an unmodifiable list
+                    if (genresDaMedia.isEmpty()) { // No need to check for null if constructor guarantees non-null
                         return false;
                     }
                     return genresDaMedia.stream()
-                            .filter(Objects::nonNull)
-                            .anyMatch(g -> g.getGenre() != null && g.getGenre().toLowerCase().contains(searchNameLower));
+                            //.filter(Objects::nonNull) // Genre objects in list should not be null
+                            .anyMatch(g -> g.getGenre().toLowerCase().contains(searchNameLower));
                 })
                 .collect(Collectors.toList());
     }
@@ -613,8 +651,12 @@ public class WorkManager {
      * @return Uma {@code List<Book>} contendo os livros correspondentes. Lista vazia se nada encontrado.
      */
     public List<Book> searchBooksByAuthor(String author) {
+        if (author == null || author.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        String searchTerm = author.trim().toLowerCase();
         return bookLibrary.stream()
-                .filter(b -> b.getAuthor().toLowerCase().contains(author.toLowerCase()))
+                .filter(b -> b.getAuthor().toLowerCase().contains(searchTerm))
                 .collect(Collectors.toList());
     }
 
@@ -626,8 +668,12 @@ public class WorkManager {
      * @return Uma {@code List<Book>} contendo o livro correspondente (geralmente 0 ou 1 item).
      */
     public List<Book> searchBooksByISBN(String isbn) {
+        if (isbn == null || isbn.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        String searchTerm = isbn.trim();
         return bookLibrary.stream()
-                .filter(b -> b.getIsbn().equalsIgnoreCase(isbn))
+                .filter(b -> b.getIsbn().equalsIgnoreCase(searchTerm))
                 .collect(Collectors.toList());
     }
 
@@ -639,8 +685,12 @@ public class WorkManager {
      * @return Uma {@code List<Films>} contendo os filmes correspondentes.
      */
     public List<Films> searchFilmsByDirector(String director) {
+        if (director == null || director.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        String searchTerm = director.trim().toLowerCase();
         return filmLibrary.stream()
-                .filter(f -> f.getDirection().toLowerCase().contains(director.toLowerCase()))
+                .filter(f -> f.getDirection().toLowerCase().contains(searchTerm))
                 .collect(Collectors.toList());
     }
 
@@ -653,8 +703,12 @@ public class WorkManager {
      * @return Uma {@code List<Films>} contendo os filmes que têm a pessoa no elenco.
      */
     public List<Films> searchFilmsByCast(String actor) {
+        if (actor == null || actor.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        String searchTerm = actor.trim().toLowerCase();
         return filmLibrary.stream()
-                .filter(f -> f.getCast().stream().anyMatch(a -> a.toLowerCase().contains(actor.toLowerCase())))
+                .filter(f -> f.getCast().stream().anyMatch(a -> a.toLowerCase().contains(searchTerm)))
                 .collect(Collectors.toList());
     }
 
@@ -668,8 +722,12 @@ public class WorkManager {
      * @return Uma {@code List<Show>} contendo as séries que têm a pessoa no elenco.
      */
     public List<Show> searchShowsByCast(String actor) {
+        if (actor == null || actor.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        String searchTerm = actor.trim().toLowerCase();
         return showLibrary.stream()
-                .filter(s -> s.getCast().stream().anyMatch(a -> a.toLowerCase().contains(actor.toLowerCase())))
+                .filter(s -> s.getCast().stream().anyMatch(a -> a.toLowerCase().contains(searchTerm)))
                 .collect(Collectors.toList());
     }
 
@@ -682,7 +740,8 @@ public class WorkManager {
      */
     public List<Media> listMediaAlphabetically() {
         return media.stream()
-                .sorted(Comparator.comparing(Media::getTitle))
+                // .filter(Objects::nonNull) // Should not be necessary if media list is well-managed
+                .sorted(Comparator.comparing(Media::getTitle, String.CASE_INSENSITIVE_ORDER))
                 .collect(Collectors.toList());
     }
 
@@ -704,18 +763,20 @@ public class WorkManager {
         }
 
         if (m instanceof Book || m instanceof Films) {
-            List<Review> reviews = m.getReviews();
-            if (reviews == null || reviews.isEmpty()) {
+            List<Review> reviews = m.getReviews(); // This is an unmodifiable list
+            if (reviews.isEmpty()) { // No need to check for null
                 return 0f;
             }
+            // To get the truly last added, we'd need the original modifiable list or a timestamp.
+            // Assuming the unmodifiable list maintains insertion order.
             Review lastReview = reviews.get(reviews.size() - 1);
-            return (lastReview != null) ? lastReview.getStars() : 0f;
+            return lastReview.getStars(); // Review constructor ensures stars is valid
         }
 
         else if (m instanceof Show) {
             Show show = (Show) m;
-            List<Season> seasons = show.getSeasons();
-            if (seasons == null || seasons.isEmpty()) {
+            List<Season> seasons = show.getSeasons(); // This is an unmodifiable list
+            if (seasons.isEmpty()) {
                 return 0f;
             }
 
@@ -723,15 +784,13 @@ public class WorkManager {
             int totalReviewCount = 0;
 
             for (Season season : seasons) {
-                if (season != null) {
-                    List<Review> seasonReviews = season.getReviews();
-                    if (seasonReviews != null && !seasonReviews.isEmpty()) {
-                        for (Review review : seasonReviews) {
-                            if (review != null) {
-                                totalStarsSum += review.getStars();
-                                totalReviewCount++;
-                            }
-                        }
+                // season objects themselves should be non-null if list management is correct
+                List<Review> seasonReviews = season.getReviews(); // Unmodifiable
+                if (!seasonReviews.isEmpty()) {
+                    for (Review review : seasonReviews) {
+                        // review objects should be non-null
+                        totalStarsSum += review.getStars();
+                        totalReviewCount++;
                     }
                 }
             }
@@ -741,8 +800,7 @@ public class WorkManager {
             }
             return totalStarsSum / totalReviewCount;
         }
-
-        else {
+        else { // Should not happen with current class hierarchy
             return 0f;
         }
     }
@@ -763,32 +821,25 @@ public class WorkManager {
      */
     public List<Media> getFilteredAndSortedMedia(Integer filterYear, Genre filterGenre, int sortOption) {
         List<Media> filteredList = this.media.stream()
-
-                .filter(media -> filterYear == null || media.getYearRelease() == filterYear)
-                .filter(media -> filterGenre == null || media.getGenres().contains(filterGenre))
+                .filter(m -> filterYear == null || m.getYearRelease() == filterYear)
+                .filter(m -> filterGenre == null || m.getGenres().stream() // m.getGenres() is unmodifiable
+                        .anyMatch(g -> g.equals(filterGenre))) // Use .equals for Genre comparison
                 .collect(Collectors.toList());
 
+        Comparator<Media> comparator;
         switch (sortOption) {
-            case 1:
-                filteredList.sort((m1, m2) -> {
-                    float avg1 = WorkManager.calculateAverage(m1);
-                    float avg2 = WorkManager.calculateAverage(m2);
-                    return Float.compare(avg2, avg1);
-                });
+            case 1: // Highest to lowest rating
+                comparator = Comparator.comparingDouble((Media m) -> calculateAverage(m)).reversed();
                 break;
-            case 2:
-                filteredList.sort((m1, m2) -> {
-                    float avg1 = WorkManager.calculateAverage(m1);
-                    float avg2 = WorkManager.calculateAverage(m2);
-                    return Float.compare(avg1, avg2);
-                });
+            case 2: // Lowest to highest rating
+                comparator = Comparator.comparingDouble((Media m) -> calculateAverage(m));
                 break;
-            case 3:
+            case 3: // Alphabetical (A-Z)
             default:
-                filteredList.sort(Comparator.comparing(Media::getTitle, String.CASE_INSENSITIVE_ORDER));
+                comparator = Comparator.comparing(Media::getTitle, String.CASE_INSENSITIVE_ORDER);
                 break;
         }
-
+        filteredList.sort(comparator);
         return filteredList;
     }
 

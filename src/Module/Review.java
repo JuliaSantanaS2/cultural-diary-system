@@ -1,12 +1,17 @@
 package Module;
 
+import java.io.Serializable; // Added
+import java.util.Objects;
+
+
 /**
  * Representa uma avaliação (review) feita por um usuário para uma mídia ou temporada.
  * Contém o comentário textual, a nota (estrelas) e a data da avaliação.
  * Esta classe é imutável após a criação, garantindo que uma review não possa ser
  * alterada depois de registrada.
  */
-public class Review {
+public class Review implements Serializable { // Added Serializable
+    private static final long serialVersionUID = 1L; // Added
     public final String comment ;
     public final float stars;
     public final String reviewDate;
@@ -22,9 +27,18 @@ public class Review {
      *                                  ou `reviewDate` for nulo.
      */
     public Review(String comment, float stars, String reviewDate){
-        this.comment = comment;
+        if (comment == null || comment.trim().isEmpty()) {
+            throw new IllegalArgumentException("Review comment cannot be null or empty.");
+        }
+        if (stars < 1.0f || stars > 5.0f) {
+            throw new IllegalArgumentException("Stars must be between 1.0 and 5.0.");
+        }
+        if (reviewDate == null || reviewDate.trim().isEmpty()) {
+            throw new IllegalArgumentException("Review date cannot be null or empty.");
+        }
+        this.comment = comment.trim();
         this.stars = stars;
-        this.reviewDate = reviewDate;
+        this.reviewDate = reviewDate.trim();
     }
 
     /**

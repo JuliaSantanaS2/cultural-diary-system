@@ -1,5 +1,6 @@
 package Module;
 
+import java.io.Serializable; // Added
 import java.util.Objects;
 
 /**
@@ -9,7 +10,8 @@ import java.util.Objects;
  * tratando nomes de gênero de forma case-insensitive.
  * Esta classe é imutável após a criação.
  */
-public class Genre implements Comparable<Genre> {
+public class Genre implements Comparable<Genre>, Serializable { // Added Serializable
+    private static final long serialVersionUID = 1L; // Added
     private String genre;
 
     /**
@@ -20,7 +22,10 @@ public class Genre implements Comparable<Genre> {
      * @throws IllegalArgumentException se o nome do gênero for nulo ou consistir apenas de espaços em branco.
      */
     public Genre(String genre) {
-        this.genre = genre;
+        if (genre == null || genre.trim().isEmpty()) {
+            throw new IllegalArgumentException("Genre name cannot be null or empty.");
+        }
+        this.genre = genre.trim();
     }
 
     /**
@@ -54,6 +59,7 @@ public class Genre implements Comparable<Genre> {
      */
     @Override
     public int compareTo(Genre other) {
+        Objects.requireNonNull(other, "Cannot compare to a null Genre.");
         return this.genre.compareToIgnoreCase(other.genre);
     }
 

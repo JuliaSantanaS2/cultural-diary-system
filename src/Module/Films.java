@@ -1,5 +1,6 @@
 package Module;
 
+import java.io.Serializable; // Added
 import java.util.List;
 
 /**
@@ -7,7 +8,8 @@ import java.util.List;
  * Adiciona atributos específicos de filmes, como direção, duração e roteiro.
  * Esta classe é imutável após a criação.
  */
-public class Films extends AudioVisualMedia {
+public class Films extends AudioVisualMedia implements Serializable { // Added Serializable
+    private static final long serialVersionUID = 1L; // Added
     private final String direction;
     private final int runningtime;
     private final String screenplay;
@@ -30,10 +32,12 @@ public class Films extends AudioVisualMedia {
      */
     public Films(List<String> cast, boolean seen, String title, List<Genre> genres, int yearRelease, String originalTitle, List<String> whereWatch, String direction, int runningtime, String screenplay) {
         super(cast,seen, title, genres, yearRelease, originalTitle, whereWatch);
-        this.direction = direction;
+        if (runningtime <= 0) {
+            throw new IllegalArgumentException("Running time must be positive.");
+        }
+        this.direction = (direction != null) ? direction.trim() : "";
         this.runningtime = runningtime;
-        this.screenplay = screenplay;
-
+        this.screenplay = (screenplay != null) ? screenplay.trim() : "";
     }
 
     /**
@@ -63,6 +67,11 @@ public class Films extends AudioVisualMedia {
         return screenplay;
     }
 
+    @Override
+    public String toString() {
+        return super.toString() + "\n" +
+                "Direção: " + (!direction.isEmpty() ? direction : "N/A") + "\n" +
+                "Duração: " + runningtime + " min\n" +
+                "Roteiro: " + (!screenplay.isEmpty() ? screenplay : "N/A");
+    }
 }
-
-
